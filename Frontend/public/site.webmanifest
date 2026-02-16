@@ -1,0 +1,24 @@
+{
+  "name": "Jean Baptiste RUKUNDO - Backend Architect",
+  "short_name": "Codex Prime",
+  "description": "Backend Architect & Systems Engineer specializing in scalable systems and APIs",
+  "icons": [
+    {
+      "src": "/web-app-manifest-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/web-app-manifest-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "theme_color": "#1e40af",
+  "background_color": "#ffffff",
+  "display": "standalone",
+  "start_url": "/",
+  "scope": "/"
+}
