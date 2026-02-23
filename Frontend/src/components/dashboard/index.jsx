@@ -1737,7 +1737,7 @@ const InvestmentDashboard = ({ darkMode, toggleDarkMode, onLogout }) => {
                   Investment Products
                 </h2>
                 <span className={`px-3 py-1 rounded-full text-xs sm:text-sm self-start ${darkMode ? 'bg-green-900/30 text-green-300' : 'bg-green-100 text-green-700'}`}>
-                  25% Daily Return
+                  14.29% Daily Return
                 </span>
               </div>
               <p className="text-sm opacity-75">Choose from our investment packages</p>

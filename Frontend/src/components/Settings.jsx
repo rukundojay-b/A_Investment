@@ -1,474 +1,706 @@
-// src/components/Settings.jsx
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+// // src/components/pages/Security.jsx
+// import React, { useState } from 'react';
+// import { 
+//   FaShieldAlt, FaLock, FaArrowLeft, FaKey,
+//   FaEye, FaEyeSlash, FaCheckCircle, FaTimesCircle,
+//   FaSpinner
+// } from 'react-icons/fa';
+// import { useNavigate } from 'react-router-dom';
+// import axios from 'axios';
+
+// const Security = ({ darkMode }) => {
+//   const navigate = useNavigate();
+//   const [loading, setLoading] = useState(false);
+//   const [showCurrentPassword, setShowCurrentPassword] = useState(false);
+//   const [showNewPassword, setShowNewPassword] = useState(false);
+//   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+//   const [passwordData, setPasswordData] = useState({
+//     currentPassword: '',
+//     newPassword: '',
+//     confirmPassword: ''
+//   });
+//   const [message, setMessage] = useState({ type: '', text: '' });
+
+//   const API_URL = 'http://localhost:5000/api';
+
+//   const handlePasswordChange = async (e) => {
+//     e.preventDefault();
+//     setMessage({ type: '', text: '' });
+    
+//     // Validation
+//     if (!passwordData.currentPassword || !passwordData.newPassword || !passwordData.confirmPassword) {
+//       setMessage({ type: 'error', text: 'All fields are required' });
+//       return;
+//     }
+
+//     if (passwordData.newPassword !== passwordData.confirmPassword) {
+//       setMessage({ type: 'error', text: 'New passwords do not match' });
+//       return;
+//     }
+
+//     if (passwordData.newPassword.length < 6) {
+//       setMessage({ type: 'error', text: 'Password must be at least 6 characters' });
+//       return;
+//     }
+
+//     if (passwordData.newPassword === passwordData.currentPassword) {
+//       setMessage({ type: 'error', text: 'New password must be different from current password' });
+//       return;
+//     }
+
+//     try {
+//       setLoading(true);
+//       const token = sessionStorage.getItem('token');
+      
+//       if (!token) {
+//         setMessage({ type: 'error', text: 'No authentication token found. Please login again.' });
+//         setTimeout(() => navigate('/login'), 2000);
+//         return;
+//       }
+
+//       console.log('🔐 Changing password...');
+      
+//       const response = await axios.post(`${API_URL}/user/change-password`, {
+//         currentPassword: passwordData.currentPassword,
+//         newPassword: passwordData.newPassword
+//       }, {
+//         headers: { 
+//           'Authorization': `Bearer ${token}`,
+//           'Content-Type': 'application/json'
+//         }
+//       });
+
+//       console.log('✅ Password change response:', response.data);
+
+//       if (response.data.success) {
+//         setMessage({ 
+//           type: 'success', 
+//           text: response.data.message || 'Password changed successfully! Please login with your new password.' 
+//         });
+        
+//         // Clear form
+//         setPasswordData({ 
+//           currentPassword: '', 
+//           newPassword: '', 
+//           confirmPassword: '' 
+//         });
+        
+//         // Optional: Logout user after password change (security best practice)
+//         setTimeout(() => {
+//           sessionStorage.removeItem('token');
+//           sessionStorage.removeItem('user');
+//           navigate('/login');
+//         }, 3000);
+//       }
+//     } catch (error) {
+//       console.error('❌ Password change error:', error);
+      
+//       if (error.response?.status === 401) {
+//         setMessage({ type: 'error', text: 'Session expired. Please login again.' });
+//         setTimeout(() => navigate('/login'), 2000);
+//       } else if (error.response?.status === 400) {
+//         setMessage({ type: 'error', text: error.response.data.message || 'Current password is incorrect' });
+//       } else if (error.response?.status === 404) {
+//         setMessage({ type: 'error', text: 'Change password endpoint not found. Please check backend.' });
+//       } else if (error.code === 'ECONNABORTED') {
+//         setMessage({ type: 'error', text: 'Connection timeout. Please try again.' });
+//       } else if (!error.response) {
+//         setMessage({ type: 'error', text: 'Cannot connect to server. Make sure backend is running.' });
+//       } else {
+//         setMessage({ 
+//           type: 'error', 
+//           text: error.response?.data?.message || 'Failed to change password. Please try again.' 
+//         });
+//       }
+//     } finally {
+//       setLoading(false);
+//       // Auto-hide message after 5 seconds (except success which stays longer)
+//       if (message.type !== 'success') {
+//         setTimeout(() => setMessage({ type: '', text: '' }), 5000);
+//       }
+//     }
+//   };
+
+//   return (
+//     <div className={`min-h-screen p-4 md:p-6 ${darkMode ? 'bg-gray-900 text-white' : 'bg-gray-50 text-gray-900'}`}>
+//       {/* Header with Back Button */}
+//       <div className="flex items-center mb-6">
+//         <button
+//           onClick={() => navigate('/dashboard')}
+//           className={`mr-4 p-2 rounded-lg ${darkMode ? 'hover:bg-gray-800' : 'hover:bg-gray-200'}`}
+//           title="Back to Dashboard"
+//         >
+//           <FaArrowLeft className="text-xl" />
+//         </button>
+//         <div>
+//           <h1 className="text-2xl md:text-3xl font-bold flex items-center">
+//             <FaShieldAlt className="mr-3 text-green-500" />
+//             Security Settings
+//           </h1>
+//           <p className="opacity-75 mt-1">Change your password and secure your account</p>
+//         </div>
+//       </div>
+
+//       {/* Message Alert */}
+//       {message.text && (
+//         <div className={`mb-6 p-4 rounded-lg flex items-center ${
+//           message.type === 'success' 
+//             ? darkMode ? 'bg-green-900/30 border border-green-700' : 'bg-green-50 border border-green-200'
+//             : darkMode ? 'bg-red-900/30 border border-red-700' : 'bg-red-50 border border-red-200'
+//         }`}>
+//           {message.type === 'success' ? (
+//             <FaCheckCircle className="text-green-500 mr-3 flex-shrink-0" />
+//           ) : (
+//             <FaTimesCircle className="text-red-500 mr-3 flex-shrink-0" />
+//           )}
+//           <span className="text-sm">{message.text}</span>
+//         </div>
+//       )}
+
+//       {/* Change Password Card - Centered */}
+//       <div className="max-w-2xl mx-auto">
+//         <div className={`p-6 md:p-8 rounded-2xl border ${darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'}`}>
+//           <div className="flex items-center mb-6">
+//             <div className={`p-3 rounded-xl ${darkMode ? 'bg-gray-700' : 'bg-gray-100'} mr-4`}>
+//               <FaKey className="text-yellow-500 text-xl" />
+//             </div>
+//             <div>
+//               <h2 className="text-xl font-bold">Change Password</h2>
+//               <p className="text-sm opacity-75">Update your password to keep your account secure</p>
+//             </div>
+//           </div>
+
+//           <form onSubmit={handlePasswordChange} className="space-y-5">
+//             {/* Current Password */}
+//             <div>
+//               <label className="block text-sm font-medium mb-2">
+//                 Current Password <span className="text-red-500">*</span>
+//               </label>
+//               <div className="relative">
+//                 <input
+//                   type={showCurrentPassword ? 'text' : 'password'}
+//                   value={passwordData.currentPassword}
+//                   onChange={(e) => setPasswordData({...passwordData, currentPassword: e.target.value})}
+//                   className={`w-full p-3 pr-10 rounded-lg border ${
+//                     darkMode 
+//                       ? 'bg-gray-700 border-gray-600 focus:border-blue-500' 
+//                       : 'bg-white border-gray-300 focus:border-blue-500'
+//                   } focus:outline-none focus:ring-1 focus:ring-blue-500`}
+//                   placeholder="Enter current password"
+//                   required
+//                   disabled={loading}
+//                 />
+//                 <button
+//                   type="button"
+//                   onClick={() => setShowCurrentPassword(!showCurrentPassword)}
+//                   className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700"
+//                   disabled={loading}
+//                 >
+//                   {showCurrentPassword ? <FaEyeSlash /> : <FaEye />}
+//                 </button>
+//               </div>
+//             </div>
+
+//             {/* New Password */}
+//             <div>
+//               <label className="block text-sm font-medium mb-2">
+//                 New Password <span className="text-red-500">*</span>
+//               </label>
+//               <div className="relative">
+//                 <input
+//                   type={showNewPassword ? 'text' : 'password'}
+//                   value={passwordData.newPassword}
+//                   onChange={(e) => setPasswordData({...passwordData, newPassword: e.target.value})}
+//                   className={`w-full p-3 pr-10 rounded-lg border ${
+//                     darkMode 
+//                       ? 'bg-gray-700 border-gray-600 focus:border-blue-500' 
+//                       : 'bg-white border-gray-300 focus:border-blue-500'
+//                   } focus:outline-none focus:ring-1 focus:ring-blue-500`}
+//                   placeholder="Enter new password (min. 6 characters)"
+//                   required
+//                   disabled={loading}
+//                   minLength={6}
+//                 />
+//                 <button
+//                   type="button"
+//                   onClick={() => setShowNewPassword(!showNewPassword)}
+//                   className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700"
+//                   disabled={loading}
+//                 >
+//                   {showNewPassword ? <FaEyeSlash /> : <FaEye />}
+//                 </button>
+//               </div>
+//               <p className="text-xs opacity-50 mt-1">
+//                 Password must be at least 6 characters long
+//               </p>
+//             </div>
+
+//             {/* Confirm New Password */}
+//             <div>
+//               <label className="block text-sm font-medium mb-2">
+//                 Confirm New Password <span className="text-red-500">*</span>
+//               </label>
+//               <div className="relative">
+//                 <input
+//                   type={showConfirmPassword ? 'text' : 'password'}
+//                   value={passwordData.confirmPassword}
+//                   onChange={(e) => setPasswordData({...passwordData, confirmPassword: e.target.value})}
+//                   className={`w-full p-3 pr-10 rounded-lg border ${
+//                     darkMode 
+//                       ? 'bg-gray-700 border-gray-600 focus:border-blue-500' 
+//                       : 'bg-white border-gray-300 focus:border-blue-500'
+//                   } focus:outline-none focus:ring-1 focus:ring-blue-500`}
+//                   placeholder="Confirm new password"
+//                   required
+//                   disabled={loading}
+//                 />
+//                 <button
+//                   type="button"
+//                   onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+//                   className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700"
+//                   disabled={loading}
+//                 >
+//                   {showConfirmPassword ? <FaEyeSlash /> : <FaEye />}
+//                 </button>
+//               </div>
+//             </div>
+
+//             {/* Password strength indicator (optional) */}
+//             {passwordData.newPassword && passwordData.newPassword.length > 0 && (
+//               <div className="mt-2">
+//                 <div className="flex items-center justify-between text-xs mb-1">
+//                   <span>Password strength:</span>
+//                   <span className={
+//                     passwordData.newPassword.length < 6 ? 'text-red-500' :
+//                     passwordData.newPassword.length < 8 ? 'text-yellow-500' :
+//                     'text-green-500'
+//                   }>
+//                     {passwordData.newPassword.length < 6 ? 'Too short' :
+//                      passwordData.newPassword.length < 8 ? 'Good' :
+//                      'Strong'}
+//                   </span>
+//                 </div>
+//                 <div className="w-full h-1.5 bg-gray-600 rounded-full overflow-hidden">
+//                   <div 
+//                     className={`h-full rounded-full ${
+//                       passwordData.newPassword.length < 6 ? 'bg-red-500 w-1/3' :
+//                       passwordData.newPassword.length < 8 ? 'bg-yellow-500 w-2/3' :
+//                       'bg-green-500 w-full'
+//                     }`}
+//                   />
+//                 </div>
+//               </div>
+//             )}
+
+//             {/* Submit Button */}
+//             <button
+//               type="submit"
+//               disabled={loading}
+//               className={`w-full py-3 rounded-lg font-bold flex items-center justify-center ${
+//                 darkMode 
+//                   ? 'bg-blue-600 hover:bg-blue-700' 
+//                   : 'bg-blue-500 hover:bg-blue-600'
+//               } text-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed mt-6`}
+//             >
+//               {loading ? (
+//                 <>
+//                   <FaSpinner className="animate-spin mr-2" />
+//                   Updating Password...
+//                 </>
+//               ) : (
+//                 <>
+//                   <FaKey className="mr-2" />
+//                   Change Password
+//                 </>
+//               )}
+//             </button>
+//           </form>
+
+//           {/* Security Tips */}
+//           <div className={`mt-6 p-4 rounded-lg ${darkMode ? 'bg-gray-700/30' : 'bg-gray-100'}`}>
+//             <h3 className="font-bold mb-2 flex items-center">
+//               <FaLock className="mr-2 text-yellow-500 text-sm" />
+//               Password Tips:
+//             </h3>
+//             <ul className="space-y-1 text-xs opacity-75">
+//               <li className="flex items-start">
+//                 <span className="text-green-500 mr-2">✓</span>
+//                 Use at least 6 characters
+//               </li>
+//               <li className="flex items-start">
+//                 <span className="text-green-500 mr-2">✓</span>
+//                 Mix letters, numbers, and symbols
+//               </li>
+//               <li className="flex items-start">
+//                 <span className="text-green-500 mr-2">✓</span>
+//                 Don't use common or easily guessed passwords
+//               </li>
+//               <li className="flex items-start">
+//                 <span className="text-green-500 mr-2">✓</span>
+//                 Never share your password with anyone
+//               </li>
+//             </ul>
+//           </div>
+//         </div>
+//       </div>
+//     </div>
+//   );
+// };
+
+// export default Security;
+
+
+
+
+
+
+
+// src/components/pages/Security.jsx
+import React, { useState } from 'react';
 import { 
-  FaUser, 
-  FaPhone, 
-  FaEnvelope, 
-  FaLock, 
-  FaSave, 
-  FaArrowLeft,
-  FaKey,
-  FaShieldAlt,
-  FaUserShield,
-  FaBell,
-  FaLanguage,
-  FaPalette
+  FaShieldAlt, FaLock, FaArrowLeft, FaKey,
+  FaEye, FaEyeSlash, FaCheckCircle, FaTimesCircle,
+  FaSpinner
 } from 'react-icons/fa';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
-const Settings = ({ darkMode }) => {
+const Security = ({ darkMode }) => {
   const navigate = useNavigate();
-  const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [saving, setSaving] = useState(false);
-  const [message, setMessage] = useState({ type: '', text: '' });
-
-  const [formData, setFormData] = useState({
-    izina_ryogukoresha: '',
-    nimero_yatelefone: '',
-    email: '',
+  const [loading, setLoading] = useState(false);
+  const [showCurrentPassword, setShowCurrentPassword] = useState(false);
+  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [passwordData, setPasswordData] = useState({
     currentPassword: '',
     newPassword: '',
     confirmPassword: ''
   });
+  const [message, setMessage] = useState({ type: '', text: '' });
 
-  useEffect(() => {
-    const token = localStorage.getItem('token');
-    const savedUser = localStorage.getItem('user');
+  const API_URL = 'http://localhost:5000/api';
+
+  const handlePasswordChange = async (e) => {
+    e.preventDefault();
+    setMessage({ type: '', text: '' });
     
-    if (!token) {
-      navigate('/login');
+    // Validation
+    if (!passwordData.currentPassword || !passwordData.newPassword || !passwordData.confirmPassword) {
+      setMessage({ type: 'error', text: 'All fields are required' });
       return;
     }
 
-    if (savedUser) {
-      try {
-        const userData = JSON.parse(savedUser);
-        setUser(userData);
-        setFormData({
-          izina_ryogukoresha: userData.izina_ryogukoresha || '',
-          nimero_yatelefone: userData.nimero_yatelefone || '',
-          email: userData.email || '',
-          currentPassword: '',
-          newPassword: '',
-          confirmPassword: ''
-        });
-      } catch (error) {
-        console.error('Error parsing user data:', error);
-        fetchUserData(token);
-      }
-    } else {
-      fetchUserData(token);
+    if (passwordData.newPassword !== passwordData.confirmPassword) {
+      setMessage({ type: 'error', text: 'New passwords do not match' });
+      return;
     }
 
-    setLoading(false);
-  }, [navigate]);
-
-  const fetchUserData = async (token) => {
-    try {
-      const response = await axios.get('http://localhost:5000/api/user/profile', {
-        headers: { 'Authorization': `Bearer ${token}` }
-      });
-
-      if (response.data.success) {
-        const userData = response.data.user;
-        setUser(userData);
-        setFormData({
-          izina_ryogukoresha: userData.izina_ryogukoresha || '',
-          nimero_yatelefone: userData.nimero_yatelefone || '',
-          email: userData.email || '',
-          currentPassword: '',
-          newPassword: '',
-          confirmPassword: ''
-        });
-        localStorage.setItem('user', JSON.stringify(userData));
-      }
-    } catch (error) {
-      console.error('Error fetching user data:', error);
-      setMessage({ type: 'error', text: 'Failed to load user data' });
+    if (passwordData.newPassword.length < 6) {
+      setMessage({ type: 'error', text: 'Password must be at least 6 characters' });
+      return;
     }
-  };
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setSaving(true);
-    setMessage({ type: '', text: '' });
+    if (passwordData.newPassword === passwordData.currentPassword) {
+      setMessage({ type: 'error', text: 'New password must be different from current password' });
+      return;
+    }
 
     try {
-      const token = localStorage.getItem('token');
+      setLoading(true);
+      const token = sessionStorage.getItem('token');
       
-      // Prepare update data
-      const updateData = {
-        izina_ryogukoresha: formData.izina_ryogukoresha,
-        nimero_yatelefone: formData.nimero_yatelefone,
-        email: formData.email
-      };
-
-      // If changing password, include password fields
-      if (formData.newPassword) {
-        if (formData.newPassword !== formData.confirmPassword) {
-          setMessage({ type: 'error', text: 'New passwords do not match' });
-          setSaving(false);
-          return;
-        }
-        if (formData.newPassword.length < 6) {
-          setMessage({ type: 'error', text: 'Password must be at least 6 characters' });
-          setSaving(false);
-          return;
-        }
-        updateData.currentPassword = formData.currentPassword;
-        updateData.newPassword = formData.newPassword;
+      if (!token) {
+        setMessage({ type: 'error', text: 'No authentication token found. Please login again.' });
+        setTimeout(() => navigate('/login'), 2000);
+        return;
       }
 
-      const response = await axios.put('http://localhost:5000/api/user/profile', updateData, {
-        headers: { 'Authorization': `Bearer ${token}` }
+      console.log('🔐 Changing password using auth endpoint...');
+      
+      // CHANGED: Using /auth/change-password instead of /user/change-password
+      const response = await axios.post(`${API_URL}/auth/change-password`, {
+        currentPassword: passwordData.currentPassword,
+        newPassword: passwordData.newPassword
+      }, {
+        headers: { 
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
       });
+
+      console.log('✅ Password change response:', response.data);
 
       if (response.data.success) {
-        setMessage({ type: 'success', text: 'Profile updated successfully' });
+        setMessage({ 
+          type: 'success', 
+          text: response.data.message || 'Password changed successfully! Please login with your new password.' 
+        });
         
-        // Update local storage
-        const updatedUser = { ...user, ...updateData };
-        localStorage.setItem('user', JSON.stringify(updatedUser));
-        setUser(updatedUser);
+        // Clear form
+        setPasswordData({ 
+          currentPassword: '', 
+          newPassword: '', 
+          confirmPassword: '' 
+        });
         
-        // Clear password fields
-        setFormData(prev => ({
-          ...prev,
-          currentPassword: '',
-          newPassword: '',
-          confirmPassword: ''
-        }));
-
-        // Clear success message after 3 seconds
+        // Logout user after password change (security best practice)
         setTimeout(() => {
-          setMessage({ type: '', text: '' });
+          sessionStorage.removeItem('token');
+          sessionStorage.removeItem('user');
+          navigate('/login');
         }, 3000);
-      } else {
-        setMessage({ type: 'error', text: response.data.message || 'Update failed' });
       }
     } catch (error) {
-      console.error('Update error:', error);
-      setMessage({ 
-        type: 'error', 
-        text: error.response?.data?.message || 'Failed to update profile' 
-      });
+      console.error('❌ Password change error:', error);
+      
+      if (error.response?.status === 401) {
+        setMessage({ type: 'error', text: error.response.data?.message || 'Current password is incorrect or session expired.' });
+        if (error.response.data?.message?.includes('token') || error.response.data?.message?.includes('session')) {
+          setTimeout(() => navigate('/login'), 2000);
+        }
+      } else if (error.response?.status === 400) {
+        setMessage({ type: 'error', text: error.response.data.message || 'Invalid request. Please check your input.' });
+      } else if (error.response?.status === 404) {
+        setMessage({ type: 'error', text: 'Change password endpoint not found. Please check backend.' });
+      } else if (error.code === 'ECONNABORTED') {
+        setMessage({ type: 'error', text: 'Connection timeout. Please try again.' });
+      } else if (!error.response) {
+        setMessage({ type: 'error', text: 'Cannot connect to server. Make sure backend is running.' });
+      } else {
+        setMessage({ 
+          type: 'error', 
+          text: error.response?.data?.message || 'Failed to change password. Please try again.' 
+        });
+      }
     } finally {
-      setSaving(false);
+      setLoading(false);
     }
   };
-
-  if (loading) {
-    return (
-      <div className={`min-h-screen flex items-center justify-center ${darkMode ? 'bg-gray-900' : 'bg-gray-50'}`}>
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
-          <p className={darkMode ? 'text-gray-400' : 'text-gray-600'}>Loading settings...</p>
-        </div>
-      </div>
-    );
-  }
-
-  if (!user) {
-    return (
-      <div className={`min-h-screen flex items-center justify-center ${darkMode ? 'bg-gray-900' : 'bg-gray-50'}`}>
-        <div className="text-center">
-          <p className={darkMode ? 'text-gray-400' : 'text-gray-600'}>User not found. Please login.</p>
-          <button
-            onClick={() => navigate('/login')}
-            className="mt-4 px-4 py-2 bg-blue-500 text-white rounded-lg"
-          >
-            Go to Login
-          </button>
-        </div>
-      </div>
-    );
-  }
 
   return (
-    <div className={`min-h-screen ${darkMode ? 'bg-gray-900 text-white' : 'bg-gray-50 text-gray-900'}`}>
-      {/* Header */}
-      <header className={`sticky top-0 z-10 ${darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'} border-b py-4 px-6`}>
-        <div className="container mx-auto flex items-center justify-between">
-          <div className="flex items-center">
-            <button
-              onClick={() => navigate('/dashboard')}
-              className={`p-2 rounded-lg mr-4 ${darkMode ? 'hover:bg-gray-700' : 'hover:bg-gray-100'}`}
-            >
-              <FaArrowLeft />
-            </button>
-            <h1 className="text-xl font-bold">Settings</h1>
-          </div>
-          <div className="flex items-center">
-            <div className={`w-10 h-10 rounded-full ${darkMode ? 'bg-gray-700' : 'bg-gray-200'} flex items-center justify-center`}>
-              <span className="font-bold">{user.izina_ryogukoresha?.charAt(0) || 'U'}</span>
-            </div>
-          </div>
+    <div className={`min-h-screen p-4 md:p-6 ${darkMode ? 'bg-gray-900 text-white' : 'bg-gray-50 text-gray-900'}`}>
+      {/* Header with Back Button */}
+      <div className="flex items-center mb-6">
+        <button
+          onClick={() => navigate('/dashboard')}
+          className={`mr-4 p-2 rounded-lg ${darkMode ? 'hover:bg-gray-800' : 'hover:bg-gray-200'}`}
+          title="Back to Dashboard"
+        >
+          <FaArrowLeft className="text-xl" />
+        </button>
+        <div>
+          <h1 className="text-2xl md:text-3xl font-bold flex items-center">
+            <FaShieldAlt className="mr-3 text-green-500" />
+            Security Settings
+          </h1>
+          <p className="opacity-75 mt-1">Change your password and secure your account</p>
         </div>
-      </header>
+      </div>
 
-      {/* Main Content */}
-      <main className="container mx-auto px-4 py-8 max-w-4xl">
-        {/* Message Display */}
-        {message.text && (
-          <div className={`mb-6 p-4 rounded-lg ${message.type === 'success' 
-            ? darkMode ? 'bg-green-900/20 border border-green-700/30' : 'bg-green-50 border border-green-200' 
-            : darkMode ? 'bg-red-900/20 border border-red-700/30' : 'bg-red-50 border border-red-200'}`}>
-            <p className={message.type === 'success' ? 'text-green-400' : 'text-red-400'}>
-              {message.text}
-            </p>
-          </div>
-        )}
+      {/* Message Alert */}
+      {message.text && (
+        <div className={`mb-6 p-4 rounded-lg flex items-center ${
+          message.type === 'success' 
+            ? darkMode ? 'bg-green-900/30 border border-green-700' : 'bg-green-50 border border-green-200'
+            : darkMode ? 'bg-red-900/30 border border-red-700' : 'bg-red-50 border border-red-200'
+        }`}>
+          {message.type === 'success' ? (
+            <FaCheckCircle className="text-green-500 mr-3 flex-shrink-0" />
+          ) : (
+            <FaTimesCircle className="text-red-500 mr-3 flex-shrink-0" />
+          )}
+          <span className="text-sm">{message.text}</span>
+        </div>
+      )}
 
-        {/* Profile Information Card */}
-        <div className={`rounded-2xl p-6 mb-8 ${darkMode ? 'bg-gray-800' : 'bg-white'} shadow-lg`}>
+      {/* Change Password Card - Centered */}
+      <div className="max-w-2xl mx-auto">
+        <div className={`p-6 md:p-8 rounded-2xl border ${darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'}`}>
           <div className="flex items-center mb-6">
-            <FaUserShield className="text-blue-500 text-xl mr-3" />
-            <h2 className="text-xl font-bold">Profile Information</h2>
+            <div className={`p-3 rounded-xl ${darkMode ? 'bg-gray-700' : 'bg-gray-100'} mr-4`}>
+              <FaKey className="text-yellow-500 text-xl" />
+            </div>
+            <div>
+              <h2 className="text-xl font-bold">Change Password</h2>
+              <p className="text-sm opacity-75">Update your password to keep your account secure</p>
+            </div>
           </div>
 
-          <form onSubmit={handleSubmit}>
-            {/* Username */}
-            <div className="mb-6">
-              <label className="block text-sm font-medium mb-2 flex items-center">
-                <FaUser className="mr-2" /> Username
+          <form onSubmit={handlePasswordChange} className="space-y-5">
+            {/* Current Password */}
+            <div>
+              <label className="block text-sm font-medium mb-2">
+                Current Password <span className="text-red-500">*</span>
               </label>
-              <input
-                type="text"
-                name="izina_ryogukoresha"
-                value={formData.izina_ryogukoresha}
-                onChange={handleChange}
-                className={`w-full p-3 rounded-lg border ${darkMode ? 'bg-gray-700 border-gray-600' : 'bg-white border-gray-300'}`}
-                required
-              />
-            </div>
-
-            {/* Phone Number */}
-            <div className="mb-6">
-              <label className="block text-sm font-medium mb-2 flex items-center">
-                <FaPhone className="mr-2" /> Phone Number
-              </label>
-              <input
-                type="tel"
-                name="nimero_yatelefone"
-                value={formData.nimero_yatelefone}
-                onChange={handleChange}
-                className={`w-full p-3 rounded-lg border ${darkMode ? 'bg-gray-700 border-gray-600' : 'bg-white border-gray-300'}`}
-                required
-              />
-            </div>
-
-            {/* Email */}
-            <div className="mb-6">
-              <label className="block text-sm font-medium mb-2 flex items-center">
-                <FaEnvelope className="mr-2" /> Email Address
-              </label>
-              <input
-                type="email"
-                name="email"
-                value={formData.email}
-                onChange={handleChange}
-                className={`w-full p-3 rounded-lg border ${darkMode ? 'bg-gray-700 border-gray-600' : 'bg-white border-gray-300'}`}
-              />
-            </div>
-
-            {/* Change Password Section */}
-            <div className="mb-8">
-              <div className="flex items-center mb-4">
-                <FaKey className="text-yellow-500 text-xl mr-3" />
-                <h3 className="text-lg font-bold">Change Password</h3>
-              </div>
-
-              {/* Current Password */}
-              <div className="mb-4">
-                <label className="block text-sm font-medium mb-2">Current Password</label>
+              <div className="relative">
                 <input
-                  type="password"
-                  name="currentPassword"
-                  value={formData.currentPassword}
-                  onChange={handleChange}
+                  type={showCurrentPassword ? 'text' : 'password'}
+                  value={passwordData.currentPassword}
+                  onChange={(e) => setPasswordData({...passwordData, currentPassword: e.target.value})}
+                  className={`w-full p-3 pr-10 rounded-lg border ${
+                    darkMode 
+                      ? 'bg-gray-700 border-gray-600 focus:border-blue-500' 
+                      : 'bg-white border-gray-300 focus:border-blue-500'
+                  } focus:outline-none focus:ring-1 focus:ring-blue-500`}
                   placeholder="Enter current password"
-                  className={`w-full p-3 rounded-lg border ${darkMode ? 'bg-gray-700 border-gray-600' : 'bg-white border-gray-300'}`}
+                  required
+                  disabled={loading}
                 />
-              </div>
-
-              {/* New Password */}
-              <div className="mb-4">
-                <label className="block text-sm font-medium mb-2">New Password</label>
-                <input
-                  type="password"
-                  name="newPassword"
-                  value={formData.newPassword}
-                  onChange={handleChange}
-                  placeholder="Enter new password"
-                  className={`w-full p-3 rounded-lg border ${darkMode ? 'bg-gray-700 border-gray-600' : 'bg-white border-gray-300'}`}
-                />
-              </div>
-
-              {/* Confirm Password */}
-              <div className="mb-4">
-                <label className="block text-sm font-medium mb-2">Confirm New Password</label>
-                <input
-                  type="password"
-                  name="confirmPassword"
-                  value={formData.confirmPassword}
-                  onChange={handleChange}
-                  placeholder="Confirm new password"
-                  className={`w-full p-3 rounded-lg border ${darkMode ? 'bg-gray-700 border-gray-600' : 'bg-white border-gray-300'}`}
-                />
+                <button
+                  type="button"
+                  onClick={() => setShowCurrentPassword(!showCurrentPassword)}
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                  disabled={loading}
+                >
+                  {showCurrentPassword ? <FaEyeSlash /> : <FaEye />}
+                </button>
               </div>
             </div>
 
-            {/* Save Button */}
+            {/* New Password */}
+            <div>
+              <label className="block text-sm font-medium mb-2">
+                New Password <span className="text-red-500">*</span>
+              </label>
+              <div className="relative">
+                <input
+                  type={showNewPassword ? 'text' : 'password'}
+                  value={passwordData.newPassword}
+                  onChange={(e) => setPasswordData({...passwordData, newPassword: e.target.value})}
+                  className={`w-full p-3 pr-10 rounded-lg border ${
+                    darkMode 
+                      ? 'bg-gray-700 border-gray-600 focus:border-blue-500' 
+                      : 'bg-white border-gray-300 focus:border-blue-500'
+                  } focus:outline-none focus:ring-1 focus:ring-blue-500`}
+                  placeholder="Enter new password (min. 6 characters)"
+                  required
+                  disabled={loading}
+                  minLength={6}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowNewPassword(!showNewPassword)}
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                  disabled={loading}
+                >
+                  {showNewPassword ? <FaEyeSlash /> : <FaEye />}
+                </button>
+              </div>
+              <p className="text-xs opacity-50 mt-1">
+                Password must be at least 6 characters long
+              </p>
+            </div>
+
+            {/* Confirm New Password */}
+            <div>
+              <label className="block text-sm font-medium mb-2">
+                Confirm New Password <span className="text-red-500">*</span>
+              </label>
+              <div className="relative">
+                <input
+                  type={showConfirmPassword ? 'text' : 'password'}
+                  value={passwordData.confirmPassword}
+                  onChange={(e) => setPasswordData({...passwordData, confirmPassword: e.target.value})}
+                  className={`w-full p-3 pr-10 rounded-lg border ${
+                    darkMode 
+                      ? 'bg-gray-700 border-gray-600 focus:border-blue-500' 
+                      : 'bg-white border-gray-300 focus:border-blue-500'
+                  } focus:outline-none focus:ring-1 focus:ring-blue-500`}
+                  placeholder="Confirm new password"
+                  required
+                  disabled={loading}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                  disabled={loading}
+                >
+                  {showConfirmPassword ? <FaEyeSlash /> : <FaEye />}
+                </button>
+              </div>
+            </div>
+
+            {/* Password strength indicator */}
+            {passwordData.newPassword && passwordData.newPassword.length > 0 && (
+              <div className="mt-2">
+                <div className="flex items-center justify-between text-xs mb-1">
+                  <span>Password strength:</span>
+                  <span className={
+                    passwordData.newPassword.length < 6 ? 'text-red-500' :
+                    passwordData.newPassword.length < 8 ? 'text-yellow-500' :
+                    'text-green-500'
+                  }>
+                    {passwordData.newPassword.length < 6 ? 'Too short' :
+                     passwordData.newPassword.length < 8 ? 'Good' :
+                     'Strong'}
+                  </span>
+                </div>
+                <div className="w-full h-1.5 bg-gray-600 rounded-full overflow-hidden">
+                  <div 
+                    className={`h-full rounded-full ${
+                      passwordData.newPassword.length < 6 ? 'bg-red-500 w-1/3' :
+                      passwordData.newPassword.length < 8 ? 'bg-yellow-500 w-2/3' :
+                      'bg-green-500 w-full'
+                    }`}
+                  />
+                </div>
+              </div>
+            )}
+
+            {/* Submit Button */}
             <button
               type="submit"
-              disabled={saving}
-              className={`w-full py-3 rounded-lg font-bold ${darkMode ? 'bg-blue-600 hover:bg-blue-700' : 'bg-blue-500 hover:bg-blue-600'} text-white flex items-center justify-center disabled:opacity-50`}
+              disabled={loading}
+              className={`w-full py-3 rounded-lg font-bold flex items-center justify-center ${
+                darkMode 
+                  ? 'bg-blue-600 hover:bg-blue-700' 
+                  : 'bg-blue-500 hover:bg-blue-600'
+              } text-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed mt-6`}
             >
-              {saving ? (
+              {loading ? (
                 <>
-                  <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
-                  Saving...
+                  <FaSpinner className="animate-spin mr-2" />
+                  Updating Password...
                 </>
               ) : (
                 <>
-                  <FaSave className="mr-2" />
-                  Save Changes
+                  <FaKey className="mr-2" />
+                  Change Password
                 </>
               )}
             </button>
           </form>
-        </div>
 
-        {/* Additional Settings Sections */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {/* Security Settings */}
-          <div className={`rounded-2xl p-6 ${darkMode ? 'bg-gray-800' : 'bg-white'} shadow-lg`}>
-            <div className="flex items-center mb-4">
-              <FaShieldAlt className="text-green-500 text-xl mr-3" />
-              <h3 className="font-bold">Security</h3>
-            </div>
-            <div className="space-y-3">
-              <button className={`w-full p-3 rounded-lg text-left ${darkMode ? 'hover:bg-gray-700' : 'hover:bg-gray-100'}`}>
-                Two-Factor Authentication
-              </button>
-              <button className={`w-full p-3 rounded-lg text-left ${darkMode ? 'hover:bg-gray-700' : 'hover:bg-gray-100'}`}>
-                Login History
-              </button>
-              <button className={`w-full p-3 rounded-lg text-left ${darkMode ? 'hover:bg-gray-700' : 'hover:bg-gray-100'}`}>
-                Active Sessions
-              </button>
-            </div>
-          </div>
-
-          {/* Notification Settings */}
-          <div className={`rounded-2xl p-6 ${darkMode ? 'bg-gray-800' : 'bg-white'} shadow-lg`}>
-            <div className="flex items-center mb-4">
-              <FaBell className="text-purple-500 text-xl mr-3" />
-              <h3 className="font-bold">Notifications</h3>
-            </div>
-            <div className="space-y-3">
-              <div className="flex items-center justify-between">
-                <span>Email Notifications</span>
-                <div className={`w-12 h-6 rounded-full ${darkMode ? 'bg-gray-700' : 'bg-gray-300'} relative`}>
-                  <div className={`w-6 h-6 rounded-full absolute top-0 left-0 ${darkMode ? 'bg-blue-500' : 'bg-blue-400'} transition-transform`}></div>
-                </div>
-              </div>
-              <div className="flex items-center justify-between">
-                <span>SMS Notifications</span>
-                <div className={`w-12 h-6 rounded-full ${darkMode ? 'bg-gray-700' : 'bg-gray-300'} relative`}>
-                  <div className={`w-6 h-6 rounded-full absolute top-0 left-0 ${darkMode ? 'bg-blue-500' : 'bg-blue-400'} transition-transform`}></div>
-                </div>
-              </div>
-              <div className="flex items-center justify-between">
-                <span>Investment Alerts</span>
-                <div className={`w-12 h-6 rounded-full ${darkMode ? 'bg-gray-700' : 'bg-gray-300'} relative`}>
-                  <div className={`w-6 h-6 rounded-full absolute top-0 left-6 ${darkMode ? 'bg-gray-500' : 'bg-gray-400'} transition-transform`}></div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Preferences */}
-          <div className={`rounded-2xl p-6 ${darkMode ? 'bg-gray-800' : 'bg-white'} shadow-lg`}>
-            <div className="flex items-center mb-4">
-              <FaLanguage className="text-yellow-500 text-xl mr-3" />
-              <h3 className="font-bold">Preferences</h3>
-            </div>
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium mb-2">Language</label>
-                <select className={`w-full p-3 rounded-lg border ${darkMode ? 'bg-gray-700 border-gray-600' : 'bg-white border-gray-300'}`}>
-                  <option>English</option>
-                  <option>Kinyarwanda</option>
-                  <option>French</option>
-                </select>
-              </div>
-              <div>
-                <label className="block text-sm font-medium mb-2">Currency</label>
-                <select className={`w-full p-3 rounded-lg border ${darkMode ? 'bg-gray-700 border-gray-600' : 'bg-white border-gray-300'}`}>
-                  <option>Rwandan Franc (FRW)</option>
-                  <option>US Dollar ($)</option>
-                  <option>Euro (€)</option>
-                </select>
-              </div>
-            </div>
-          </div>
-
-          {/* Appearance */}
-          <div className={`rounded-2xl p-6 ${darkMode ? 'bg-gray-800' : 'bg-white'} shadow-lg`}>
-            <div className="flex items-center mb-4">
-              <FaPalette className="text-pink-500 text-xl mr-3" />
-              <h3 className="font-bold">Appearance</h3>
-            </div>
-            <div className="space-y-3">
-              <button className={`w-full p-3 rounded-lg text-left ${darkMode ? 'bg-blue-900/30' : 'bg-blue-100'}`}>
-                Dark Mode
-              </button>
-              <button className={`w-full p-3 rounded-lg text-left ${darkMode ? 'hover:bg-gray-700' : 'hover:bg-gray-100'}`}>
-                Light Mode
-              </button>
-              <button className={`w-full p-3 rounded-lg text-left ${darkMode ? 'hover:bg-gray-700' : 'hover:bg-gray-100'}`}>
-                System Default
-              </button>
-            </div>
+          {/* Security Tips */}
+          <div className={`mt-6 p-4 rounded-lg ${darkMode ? 'bg-gray-700/30' : 'bg-gray-100'}`}>
+            <h3 className="font-bold mb-2 flex items-center">
+              <FaLock className="mr-2 text-yellow-500 text-sm" />
+              Password Tips:
+            </h3>
+            <ul className="space-y-1 text-xs opacity-75">
+              <li className="flex items-start">
+                <span className="text-green-500 mr-2">✓</span>
+                Use at least 6 characters
+              </li>
+              <li className="flex items-start">
+                <span className="text-green-500 mr-2">✓</span>
+                Mix letters, numbers, and symbols
+              </li>
+              <li className="flex items-start">
+                <span className="text-green-500 mr-2">✓</span>
+                Don't use common or easily guessed passwords
+              </li>
+              <li className="flex items-start">
+                <span className="text-green-500 mr-2">✓</span>
+                Never share your password with anyone
+              </li>
+            </ul>
           </div>
         </div>
-
-        {/* Account Status */}
-        <div className={`mt-8 rounded-2xl p-6 ${darkMode ? 'bg-gray-800' : 'bg-white'} shadow-lg`}>
-          <h3 className="font-bold mb-4">Account Status</h3>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <div className="text-center p-4 rounded-lg bg-gray-700/30">
-              <div className="text-2xl font-bold text-green-500">Active</div>
-              <div className="text-sm opacity-75">Status</div>
-            </div>
-            <div className="text-center p-4 rounded-lg bg-gray-700/30">
-              <div className="text-2xl font-bold">{new Date(user.createdAt).toLocaleDateString()}</div>
-              <div className="text-sm opacity-75">Joined</div>
-            </div>
-            <div className="text-center p-4 rounded-lg bg-gray-700/30">
-              <div className="text-2xl font-bold">{user.referrals?.count || 0}</div>
-              <div className="text-sm opacity-75">Referrals</div>
-            </div>
-            <div className="text-center p-4 rounded-lg bg-gray-700/30">
-              <div className="text-2xl font-bold">{(user.wallets?.main || 0).toLocaleString()} FRW</div>
-              <div className="text-sm opacity-75">Balance</div>
-            </div>
-          </div>
-        </div>
-      </main>
+      </div>
     </div>
   );
 };
 
-export default Settings;
+export default Security;

@@ -57,8 +57,11 @@ app.get((req,res)=>{
     }
        
     })
-
-app.post(())
+app.post((req,res)=>{
+    const {static,register} = req.body
+    const user_id = req.params.id 
+    const query = "SELECT stastic , register from tralval where user_id = ?"
+})
 
 const port = 3000
 app.listen(port,()=>{

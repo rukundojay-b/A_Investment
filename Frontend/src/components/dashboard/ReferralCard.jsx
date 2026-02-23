@@ -75,7 +75,7 @@ const ReferralCard = ({ darkMode, user, showCopySuccess, handleCopyReferralLink,
           </div>
           <div>
             <div className="font-medium text-sm">They join & invest</div>
-            <div className="text-xs opacity-75">Minimum 10,000 FRW</div>
+            <div className="text-xs opacity-75">Minimum 6600 FRW</div>
           </div>
         </div>
         <div className="flex items-center">
@@ -84,7 +84,7 @@ const ReferralCard = ({ darkMode, user, showCopySuccess, handleCopyReferralLink,
           </div>
           <div>
             <div className="font-medium text-sm">Earn 10% commission</div>
-            <div className="text-xs opacity-75">From their daily profits</div>
+            <div className="text-xs opacity-75">From their First Investment</div>
           </div>
         </div>
       </div>

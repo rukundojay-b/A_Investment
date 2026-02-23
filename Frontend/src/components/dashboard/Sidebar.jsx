@@ -121,7 +121,7 @@ const Sidebar = ({
                 <span className="font-medium">Earning Wallet</span>
               </div>
               <span className={`px-2 py-1 rounded-full text-xs ${darkMode ? 'bg-gray-700 text-gray-300' : 'bg-gray-200 text-gray-700'}`}>
-                +25% Daily
+                +14.29% Daily
               </span>
             </div>
             <div className="mb-4">
@@ -179,7 +179,7 @@ const Sidebar = ({
             <div className="text-2xl font-bold text-green-500">
               {formatCurrency(totalDailyProfit)} FRW
             </div>
-            <div className="text-sm opacity-75 mt-1">Earned Today (+25%)</div>
+            <div className="text-sm opacity-75 mt-1">Earned Today (+14.29%)</div>
           </div>
 
           {/* Quick Actions */}
