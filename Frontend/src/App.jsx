@@ -27,45 +27,67 @@ function App() {
     return savedTheme !== null ? JSON.parse(savedTheme) : true;
   });
   const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   // Save dark mode to localStorage whenever it changes
   useEffect(() => {
     localStorage.setItem('darkMode', JSON.stringify(darkMode));
   }, [darkMode]);
 
-  // Load user from localStorage on app start
+  // Load user from sessionStorage on app start (not localStorage!)
   useEffect(() => {
-    const storedUser = localStorage.getItem('user');
-    const token = localStorage.getItem('token');
+    const storedUser = sessionStorage.getItem('user');
+    const token = sessionStorage.getItem('token');
     
     if (storedUser && token) {
       try {
         const userData = JSON.parse(storedUser);
         setUser(userData);
+        console.log('✅ User loaded from sessionStorage:', userData?.izina_ryogukoresha);
       } catch (error) {
-        console.error('Error parsing user from localStorage:', error);
-        localStorage.removeItem('user');
-        localStorage.removeItem('token');
+        console.error('Error parsing user from sessionStorage:', error);
+        sessionStorage.removeItem('user');
+        sessionStorage.removeItem('token');
       }
     }
+    setLoading(false);
   }, []);
 
-  const handleLogin = (userData) => {
+  const handleLogin = (userData, token) => {
+    console.log('🔐 handleLogin called', userData?.izina_ryogukoresha);
+    
+    // Store in sessionStorage (cleared when tab closes)
+    sessionStorage.setItem('token', token);
+    sessionStorage.setItem('user', JSON.stringify(userData));
+    
     setUser(userData);
-    localStorage.setItem('user', JSON.stringify(userData));
   };
 
   const handleLogout = () => {
+    console.log('🚪 handleLogout called');
+    
+    // Clear sessionStorage
+    sessionStorage.removeItem('user');
+    sessionStorage.removeItem('token');
+    
     setUser(null);
-    localStorage.removeItem('user');
-    localStorage.removeItem('token');
-    window.location.href = '/login';
   };
 
-  // ✅ FIXED: Single function to handle dark mode toggling
+  // Toggle dark mode
   const toggleDarkMode = () => {
     setDarkMode(prevMode => !prevMode);
   };
+
+  if (loading) {
+    return (
+      <div className={`min-h-screen flex items-center justify-center ${darkMode ? 'bg-gray-900' : 'bg-gray-50'}`}>
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto"></div>
+          <p className={`mt-4 ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>Loading...</p>
+        </div>
+      </div>
+    );
+  }
 
   // Protect routes - check if user is authenticated
   const ProtectedRoute = ({ children }) => {
@@ -113,14 +135,14 @@ function App() {
           }
         />
 
-        {/* PROTECTED ROUTES - Require authentication */}
+        {/* PROTECTED ROUTES */}
         <Route
           path="/dashboard"
           element={
             <ProtectedRoute>
               <InvestmentDashboard
                 darkMode={darkMode}
-                toggleDarkMode={toggleDarkMode} // ✅ Pass only toggleDarkMode
+                toggleDarkMode={toggleDarkMode}
                 onLogout={handleLogout}
               />
             </ProtectedRoute>

@@ -2,14 +2,23 @@
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
 // // models/User.js
 // const mongoose = require('mongoose');
 // const jwt = require('jsonwebtoken');
-// const bcrypt = require('bcryptjs'); 
-
-// // ==================================================
-// // ADD THIS IMPORT AT THE TOP
-// // ==================================================
+// const bcrypt = require('bcryptjs');
 // const Transaction = require('./Transaction');
 
 // const userSchema = new mongoose.Schema({
@@ -31,9 +40,6 @@
 //     required: true
 //   },
 
-//   // =====================
-//   // ADDED: PROFILE FIELDS
-//   // =====================
 //   email: {
 //     type: String,
 //     trim: true,
@@ -51,9 +57,6 @@
 //     default: 'male'
 //   },
 
-//   // =====================
-//   // REFERRAL SYSTEM
-//   // =====================
 //   referralCode: {
 //     type: String,
 //     unique: true,
@@ -66,224 +69,96 @@
 //     default: null
 //   },
 
-//   // =====================
-//   // WALLETS
-//   // =====================
 //   wallets: {
-//     main: {
-//       type: Number,
-//       default: 400
-//     },
-//     earning: {
-//       type: Number,
-//       default: 0
-//     },
-//     reserved: {
-//       type: Number,
-//       default: 0
-//     }
+//     main: { type: Number, default: 400 },
+//     earning: { type: Number, default: 0 },
+//     reserved: { type: Number, default: 0 }
 //   },
 
-//   // =====================
-//   // ACTIVE INVESTMENTS
-//   // =====================
 //   activeInvestments: [
 //     {
-//       productId: { 
-//         type: mongoose.Schema.Types.ObjectId, 
-//         ref: 'Product' 
-//       },
+//       productId: { type: mongoose.Schema.Types.ObjectId, ref: 'Product' },
 //       productName: String,
-//       quantity: { 
-//         type: Number, 
-//         default: 1 
-//       },
+//       quantity: { type: Number, default: 1 },
 //       purchasePrice: Number,
 //       dailyEarning: Number,
-//       purchaseDate: { 
-//         type: Date, 
-//         default: Date.now 
-//       },
-//       status: {
-//         type: String,
-//         enum: ['active', 'completed', 'cancelled'],
-//         default: 'active'
-//       },
-//       duration: {
-//         type: String,
-//         default: '30 days'
-//       },
-//       returnRate: {
-//         type: String,
-//         default: '25%'
-//       }
+//       purchaseDate: { type: Date, default: Date.now },
+//       status: { type: String, enum: ['active', 'completed', 'cancelled'], default: 'active' },
+//       duration: { type: String, default: '30 days' },
+//       returnRate: { type: String, default: '25%' }
 //     }
 //   ],
 
-//   // =====================
-//   // TRANSACTIONS
-//   // =====================
 //   transactions: [
 //     {
-//       type: { 
-//         type: String, 
-//         enum: ['deposit', 'withdraw', 'investment', 'earning', 'transfer', 'referral'] 
-//       },
+//       type: { type: String, enum: ['deposit', 'withdraw', 'investment', 'earning', 'transfer', 'referral'] },
 //       amount: Number,
-//       status: { 
-//         type: String, 
-//         enum: ['pending', 'completed', 'rejected', 'failed'], 
-//         default: 'pending' 
-//       },
+//       status: { type: String, enum: ['pending', 'completed', 'rejected', 'failed'], default: 'pending' },
 //       description: String,
-//       paymentMethod: { 
-//         type: String, 
-//         enum: ['mtn', 'airtel', 'bank', 'system'] 
-//       },
+//       paymentMethod: { type: String, enum: ['mtn', 'airtel', 'bank', 'system'] },
 //       reference: String,
 //       adminNote: String,
-//       processedBy: { 
-//         type: mongoose.Schema.Types.ObjectId, 
-//         ref: 'User' 
-//       },
+//       processedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
 //       phoneNumber: String,
-//       createdAt: { 
-//         type: Date, 
-//         default: Date.now 
-//       },
+//       createdAt: { type: Date, default: Date.now },
 //       processedAt: Date
 //     }
 //   ],
 
-//   // =====================
-//   // STATS
-//   // =====================
 //   stats: {
-//     totalReferrals: { 
-//       type: Number, 
-//       default: 0 
-//     },
-//     totalEarned: { 
-//       type: Number, 
-//       default: 0 
-//     },
-//     totalSpent: { 
-//       type: Number, 
-//       default: 0 
-//     },
-//     totalInvestments: { 
-//       type: Number, 
-//       default: 0 
-//     },
-//     totalWithdrawn: { 
-//       type: Number, 
-//       default: 0 
-//     },
-//     referralEarnings: { 
-//       type: Number, 
-//       default: 0 
-//     },
-//     totalDeposits: { 
-//       type: Number, 
-//       default: 0 
-//     },
-//     pendingDeposits: { 
-//       type: Number, 
-//       default: 0 
-//     },
-//     pendingWithdrawals: { 
-//       type: Number, 
-//       default: 0 
-//     },
-//     dailyEarnings: { 
-//       type: Number, 
-//       default: 0 
-//     }
+//     totalReferrals: { type: Number, default: 0 },
+//     totalEarned: { type: Number, default: 0 },
+//     totalSpent: { type: Number, default: 0 },
+//     totalInvestments: { type: Number, default: 0 },
+//     totalWithdrawn: { type: Number, default: 0 },
+//     referralEarnings: { type: Number, default: 0 },
+//     totalDeposits: { type: Number, default: 0 },
+//     pendingDeposits: { type: Number, default: 0 },
+//     pendingWithdrawals: { type: Number, default: 0 },
+//     dailyEarnings: { type: Number, default: 0 }
 //   },
 
-//   // =====================
-//   // NOTIFICATIONS
-//   // =====================
 //   notifications: [
 //     {
 //       message: String,
-//       type: {
-//         type: String,
-//         enum: ['info', 'success', 'warning', 'error'],
-//         default: 'info'
-//       },
-//       read: {
-//         type: Boolean,
-//         default: false
-//       },
-//       createdAt: {
-//         type: Date,
-//         default: Date.now
-//       }
+//       type: { type: String, enum: ['info', 'success', 'warning', 'error'], default: 'info' },
+//       read: { type: Boolean, default: false },
+//       createdAt: { type: Date, default: Date.now }
 //     }
 //   ],
 
-//   status: {
-//     type: String,
-//     default: 'active',
-//     enum: ['active', 'inactive', 'suspended']
-//   },
-
-//   lastLogin: {
-//     type: Date,
-//     default: Date.now
-//   },
-
-//   createdAt: {
-//     type: Date,
-//     default: Date.now
-//   }
+//   status: { type: String, default: 'active', enum: ['active', 'inactive', 'suspended'] },
+//   lastLogin: { type: Date, default: Date.now },
+//   createdAt: { type: Date, default: Date.now }
 // });
 
 // // ==================================================
 // // PRE-SAVE HOOK
 // // ==================================================
 // userSchema.pre('save', async function (next) {
-//   // Hash password if modified
 //   if (this.isModified('ijambo_banga')) {
 //     this.ijambo_banga = await bcrypt.hash(this.ijambo_banga, 10);
 //   }
 
-//   // Generate referral code if missing
 //   if (!this.referralCode) {
 //     let code;
 //     let exists = true;
-
 //     while (exists) {
 //       code = 'APEX' + Math.random().toString(36).substring(2, 8).toUpperCase();
 //       exists = await mongoose.models.User.findOne({ referralCode: code });
 //     }
-
 //     this.referralCode = code;
 //   }
 
-//   // Ensure wallets object exists
 //   if (!this.wallets) {
-//     this.wallets = {
-//       main: 400,
-//       earning: 0,
-//       reserved: 0
-//     };
+//     this.wallets = { main: 400, earning: 0, reserved: 0 };
 //   }
 
-//   // Ensure stats object exists
 //   if (!this.stats) {
 //     this.stats = {
-//       totalReferrals: 0,
-//       totalEarned: 0,
-//       totalSpent: 0,
-//       totalInvestments: 0,
-//       totalWithdrawn: 0,
-//       referralEarnings: 0,
-//       totalDeposits: 0,
-//       pendingDeposits: 0,
-//       pendingWithdrawals: 0,
-//       dailyEarnings: 0
+//       totalReferrals: 0, totalEarned: 0, totalSpent: 0, totalInvestments: 0,
+//       totalWithdrawn: 0, referralEarnings: 0, totalDeposits: 0,
+//       pendingDeposits: 0, pendingWithdrawals: 0, dailyEarnings: 0
 //     };
 //   }
 
@@ -299,26 +174,17 @@
 
 // userSchema.methods.generateAuthToken = function () {
 //   const jwtSecret = process.env.JWT_SECRET || '123456';
-
 //   return jwt.sign(
-//     {
-//       userId: this._id,
-//       phone: this.nimero_yatelefone,
-//       username: this.izina_ryogukoresha
-//     },
+//     { userId: this._id, phone: this.nimero_yatelefone, username: this.izina_ryogukoresha },
 //     jwtSecret,
 //     { expiresIn: '7d' }
 //   );
 // };
 
-
-
-
 // // ==================================================
-// // DASHBOARD & FINANCE METHODS - UPDATED
+// // DASHBOARD & FINANCE METHODS
 // // ==================================================
 // userSchema.methods.getDashboardData = function () {
-//   // Calculate total pending deposit/withdraw amounts
 //   const pendingTransactions = this.transactions.filter(t => 
 //     t.status === 'pending' && (t.type === 'deposit' || t.type === 'withdraw')
 //   );
@@ -331,23 +197,17 @@
 //     .filter(t => t.type === 'withdraw')
 //     .reduce((sum, t) => sum + (t.amount || 0), 0);
 
-//   // Calculate daily earnings from active investments
 //   const totalDailyProfit = this.activeInvestments.reduce(
-//     (total, inv) => total + (inv.dailyEarning || 0),
-//     0
+//     (total, inv) => total + (inv.dailyEarning || 0), 0
 //   );
 
-//   // Calculate total investment value
 //   const totalInvestmentValue = this.activeInvestments.reduce(
-//     (total, inv) => total + (inv.purchasePrice || 0),
-//     0
+//     (total, inv) => total + (inv.purchasePrice || 0), 0
 //   );
 
-//   // Get user stats with defaults
 //   const userStats = this.stats || {};
   
-//   // Create dashboard data object
-//   const dashboardData = {
+//   return {
 //     success: true,
 //     id: this._id,
 //     _id: this._id,
@@ -362,7 +222,7 @@
 //       main: this.wallets?.main || 0,
 //       earning: this.wallets?.earning || 0,
 //       reserved: this.wallets?.reserved || 0,
-//       available: (this.wallets?.main || 0) - (this.wallets?.reserved || 0)
+//       available: (this.wallets?.earning || 0) - (this.wallets?.reserved || 0) // FIXED: Show available earnings
 //     },
 //     stats: {
 //       totalReferrals: userStats.totalReferrals || 0,
@@ -386,57 +246,34 @@
 //     recentTransactions: (this.transactions || [])
 //       .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
 //       .slice(0, 5),
-    
-//     // Dashboard-specific calculations
 //     totalDailyProfit: totalDailyProfit,
 //     totalInvestmentValue: totalInvestmentValue,
-//     availableBalance: (this.wallets?.main || 0) - (this.wallets?.reserved || 0),
-    
-//     // Referral information
+//     availableBalance: (this.wallets?.earning || 0) - (this.wallets?.reserved || 0),
 //     referralStats: {
 //       totalReferrals: userStats.totalReferrals || 0,
 //       totalEarned: userStats.referralEarnings || 0,
-//       pendingCommissions: 0 // You can add calculation logic here
+//       pendingCommissions: 0
 //     }
 //   };
-
-//   return dashboardData;
 // };
 
-// // ✅ Daily earnings calculation
 // userSchema.methods.getDailyEarnings = function () {
-//   if (!this.activeInvestments || this.activeInvestments.length === 0) {
-//     return 0;
-//   }
-
-//   return this.activeInvestments.reduce(
-//     (total, inv) => total + (inv.dailyEarning || 0),
-//     0
-//   );
+//   if (!this.activeInvestments || this.activeInvestments.length === 0) return 0;
+//   return this.activeInvestments.reduce((total, inv) => total + (inv.dailyEarning || 0), 0);
 // };
 
-// // ✅ Total investment calculation
 // userSchema.methods.getTotalInvestment = function () {
-//   if (!this.activeInvestments || this.activeInvestments.length === 0) {
-//     return 0;
-//   }
-
-//   return this.activeInvestments.reduce(
-//     (total, inv) => total + (inv.purchasePrice || 0),
-//     0
-//   );
+//   if (!this.activeInvestments || this.activeInvestments.length === 0) return 0;
+//   return this.activeInvestments.reduce((total, inv) => total + (inv.purchasePrice || 0), 0);
 // };
 
-// // ✅ Add daily earnings to wallet
 // userSchema.methods.addDailyEarnings = async function () {
 //   const daily = this.getDailyEarnings();
-
 //   if (daily > 0) {
 //     this.wallets.earning += daily;
 //     this.stats.totalEarned += daily;
 //     this.stats.dailyEarnings = daily;
     
-//     // Add transaction record
 //     this.transactions.push({
 //       type: 'earning',
 //       amount: daily,
@@ -449,22 +286,15 @@
     
 //     await this.save();
 //   }
-
 //   return daily;
 // };
 
 // // ==================================================
-// // TRANSACTION METHODS
+// // TRANSACTION MODEL INTEGRATION METHODS
 // // ==================================================
 
-// // ==================================================
-// // NEW: TRANSACTION MODEL INTEGRATION METHODS
-// // ==================================================
-
-// // ✅ Create transaction record in BOTH collections
 // userSchema.methods.createTransactionRecord = async function(transactionData) {
 //   try {
-//     // Create transaction in Transaction collection
 //     const transaction = new Transaction({
 //       user: this._id,
 //       ...transactionData
@@ -472,7 +302,6 @@
     
 //     await transaction.save();
     
-//     // Also add to user's embedded transactions array
 //     const userTransaction = {
 //       _id: transaction._id,
 //       type: transaction.type,
@@ -498,15 +327,11 @@
 //   }
 // };
 
-// // ✅ UPDATE: Create deposit request (uses Transaction model)
+// // ✅ FIXED: Create deposit request
 // userSchema.methods.createDepositRequest = async function (amount, paymentMethod, phoneNumber, description) {
 //   try {
-//     // Check for minimum deposit
-//     if (amount < 1000) {
-//       throw new Error('Minimum deposit is 1,000 FRW');
-//     }
+//     if (amount < 1000) throw new Error('Minimum deposit is 1,000 FRW');
 
-//     // Create transaction in BOTH collections
 //     const transaction = await this.createTransactionRecord({
 //       type: 'deposit',
 //       amount: amount,
@@ -516,23 +341,10 @@
 //       description: description || `Deposit request via ${paymentMethod}`
 //     });
 
-//     // Update user stats
 //     this.stats.pendingDeposits += amount;
-    
-//     // Save user with updated stats
 //     await this.save();
     
-//     console.log(`\n💰 ========================================`);
-//     console.log(`💰 DEPOSIT REQUEST CREATED`);
-//     console.log(`💰 ========================================`);
-//     console.log(`👤 User: ${this.izina_ryogukoresha}`);
-//     console.log(`📝 Transaction ID: ${transaction._id}`);
-//     console.log(`🆔 Reference: ${transaction.reference}`);
-//     console.log(`💵 Amount: ${amount.toLocaleString()} FRW`);
-//     console.log(`💳 Payment Method: ${paymentMethod}`);
-//     console.log(`📱 Phone: ${phoneNumber}`);
-//     console.log(`📊 Status: ${transaction.status}`);
-//     console.log(`💰 ========================================\n`);
+//     console.log(`\n💰 DEPOSIT REQUEST CREATED: ${amount.toLocaleString()} FRW`);
     
 //     return transaction;
 //   } catch (error) {
@@ -541,23 +353,20 @@
 //   }
 // };
 
-// // ✅ UPDATE: Create withdrawal request (uses Transaction model)
+// // ✅ FIXED: Create withdrawal request - DEDUCT from EARNING, ADD to RESERVED
 // userSchema.methods.createWithdrawalRequest = async function (amount, paymentMethod, phoneNumber, description) {
 //   try {
-//     // Check for minimum withdrawal
-//     if (amount < 5000) {
-//       throw new Error('Minimum withdrawal is 5,000 FRW');
-//     }
+//     if (amount < 5000) throw new Error('Minimum withdrawal is 5,000 FRW');
 
-//     // Check if user has sufficient earnings balance
+//     // Check EARNING wallet
 //     if (this.wallets.earning < amount) {
 //       throw new Error(`Insufficient earnings balance. Available: ${this.wallets.earning.toLocaleString()} FRW`);
 //     }
 
-//     // Reserve the amount
+//     // ✅ CRITICAL FIX: DEDUCT from EARNING and ADD to RESERVED
+//     this.wallets.earning -= amount;
 //     this.wallets.reserved += amount;
     
-//     // Create transaction in BOTH collections
 //     const transaction = await this.createTransactionRecord({
 //       type: 'withdraw',
 //       amount: amount,
@@ -567,24 +376,12 @@
 //       description: description || `Withdrawal request to ${paymentMethod}`
 //     });
 
-//     // Update user stats
 //     this.stats.pendingWithdrawals += amount;
-    
-//     // Save user with reserved amount
 //     await this.save();
     
-//     console.log(`\n💸 ========================================`);
-//     console.log(`💸 WITHDRAWAL REQUEST CREATED`);
-//     console.log(`💸 ========================================`);
-//     console.log(`👤 User: ${this.izina_ryogukoresha}`);
-//     console.log(`📝 Transaction ID: ${transaction._id}`);
-//     console.log(`🆔 Reference: ${transaction.reference}`);
-//     console.log(`💵 Amount: ${amount.toLocaleString()} FRW`);
-//     console.log(`💳 Payment Method: ${paymentMethod}`);
-//     console.log(`📱 Phone: ${phoneNumber}`);
-//     console.log(`📊 Status: ${transaction.status}`);
+//     console.log(`\n💸 WITHDRAWAL REQUEST CREATED: ${amount.toLocaleString()} FRW`);
+//     console.log(`💰 Earnings left: ${this.wallets.earning.toLocaleString()} FRW`);
 //     console.log(`🔒 Reserved: ${this.wallets.reserved.toLocaleString()} FRW`);
-//     console.log(`💸 ========================================\n`);
     
 //     return transaction;
 //   } catch (error) {
@@ -593,18 +390,14 @@
 //   }
 // };
 
-// // ✅ Create investment purchase
+// // ✅ FIXED: Create investment purchase
 // userSchema.methods.createInvestment = async function (productId, productName, price, dailyEarning, duration, returnRate) {
-//   // Check if user has sufficient available balance
-//   const availableBalance = (this.wallets.main || 0) - (this.wallets.reserved || 0);
-//   if (availableBalance < price) {
-//     throw new Error(`Insufficient balance for investment. Available: ${availableBalance} FRW, Required: ${price} FRW`);
+//   if (this.wallets.main < price) {
+//     throw new Error(`Insufficient balance. Available: ${this.wallets.main.toLocaleString()} FRW`);
 //   }
 
-//   // Deduct from main wallet
 //   this.wallets.main -= price;
   
-//   // Create investment record
 //   const investment = {
 //     productId: productId,
 //     productName: productName,
@@ -619,12 +412,10 @@
 
 //   this.activeInvestments.push(investment);
   
-//   // Update stats
 //   this.stats.totalInvestments = (this.stats.totalInvestments || 0) + 1;
 //   this.stats.totalSpent = (this.stats.totalSpent || 0) + price;
 //   this.stats.dailyEarnings = (this.stats.dailyEarnings || 0) + dailyEarning;
   
-//   // Create transaction record
 //   const transaction = {
 //     type: 'investment',
 //     amount: price,
@@ -641,92 +432,9 @@
 //   return { investment, transaction };
 // };
 
-// // ✅ UPDATE: Admin: Approve deposit (with Transaction model integration)
-// userSchema.methods.approveDeposit = async function (transactionId, adminId, note) {
-//   try {
-//     console.log(`\n💰 ========================================`);
-//     console.log(`💰 APPROVING DEPOSIT`);
-//     console.log(`💰 ========================================`);
-//     console.log(`👤 User: ${this.izina_ryogukoresha}`);
-//     console.log(`📱 Phone: ${this.nimero_yatelefone}`);
-//     console.log(`📝 Transaction ID: ${transactionId}`);
-//     console.log(`👨‍💼 Admin ID: ${adminId}`);
-//     console.log(`🗒️  Note: ${note || 'No note provided'}`);
-    
-//     const transaction = this.transactions.id(transactionId);
-    
-//     if (!transaction || transaction.type !== 'deposit') {
-//       throw new Error('Transaction not found or not a deposit');
-//     }
-
-//     if (transaction.status !== 'pending') {
-//       throw new Error('Transaction already processed');
-//     }
-
-//     console.log(`📋 Transaction Details:`);
-//     console.log(`💵 Amount: ${transaction.amount.toLocaleString()} FRW`);
-//     console.log(`📄 Description: ${transaction.description}`);
-//     console.log(`🆔 Reference: ${transaction.reference}`);
-//     console.log(`📊 Old Status: ${transaction.status}`);
-    
-//     // Also update Transaction collection
-//     const mainTransaction = await Transaction.findById(transactionId);
-//     if (mainTransaction) {
-//       mainTransaction.status = 'completed';
-//       mainTransaction.adminNote = note || 'Deposit approved';
-//       mainTransaction.processedBy = adminId;
-//       mainTransaction.processedAt = new Date();
-//       await mainTransaction.save();
-//       console.log(`✅ Updated Transaction collection record`);
-//     }
-
-//     // Update embedded transaction
-//     transaction.status = 'completed';
-//     transaction.processedBy = adminId;
-//     transaction.processedAt = new Date();
-//     transaction.adminNote = note || 'Deposit approved';
-
-//     // Update user wallet and stats
-//     const oldBalance = this.wallets.main;
-//     this.wallets.main += transaction.amount;
-//     this.stats.totalDeposits += transaction.amount;
-//     this.stats.pendingDeposits -= transaction.amount;
-
-//     console.log(`💰 Old Balance: ${oldBalance.toLocaleString()} FRW`);
-//     console.log(`💰 Deposit Amount: ${transaction.amount.toLocaleString()} FRW`);
-//     console.log(`💰 New Balance: ${this.wallets.main.toLocaleString()} FRW`);
-//     console.log(`📊 Total Deposits: ${this.stats.totalDeposits.toLocaleString()} FRW`);
-
-//     // Add notification
-//     await this.addNotification(
-//       `Your deposit of ${transaction.amount.toLocaleString()} FRW has been approved and added to your account.`,
-//       'success'
-//     );
-
-//     await this.save();
-    
-//     console.log(`✅ Deposit approved successfully!`);
-//     console.log(`💰 ========================================\n`);
-    
-//     return transaction;
-//   } catch (error) {
-//     console.error('Error approving deposit:', error);
-//     throw error;
-//   }
-// };
-
-// // ✅ UPDATE: Admin: Approve withdrawal (with Transaction model integration)
+// // ✅ FIXED: Admin approve withdrawal - ONLY remove from RESERVED
 // userSchema.methods.approveWithdrawal = async function (transactionId, adminId, note) {
 //   try {
-//     console.log(`\n💸 ========================================`);
-//     console.log(`💸 APPROVING WITHDRAWAL`);
-//     console.log(`💸 ========================================`);
-//     console.log(`👤 User: ${this.izina_ryogukoresha}`);
-//     console.log(`📱 Phone: ${this.nimero_yatelefone}`);
-//     console.log(`📝 Transaction ID: ${transactionId}`);
-//     console.log(`👨‍💼 Admin ID: ${adminId}`);
-//     console.log(`🗒️  Note: ${note || 'No note provided'}`);
-    
 //     const transaction = this.transactions.id(transactionId);
     
 //     if (!transaction || transaction.type !== 'withdraw') {
@@ -737,15 +445,6 @@
 //       throw new Error('Transaction already processed');
 //     }
 
-//     console.log(`📋 Transaction Details:`);
-//     console.log(`💵 Amount: ${transaction.amount.toLocaleString()} FRW`);
-//     console.log(`📄 Description: ${transaction.description}`);
-//     console.log(`🆔 Reference: ${transaction.reference}`);
-//     console.log(`📊 Old Status: ${transaction.status}`);
-//     console.log(`📱 Withdrawal Phone: ${transaction.phoneNumber}`);
-//     console.log(`💳 Payment Method: ${transaction.paymentMethod}`);
-    
-//     // Also update Transaction collection
 //     const mainTransaction = await Transaction.findById(transactionId);
 //     if (mainTransaction) {
 //       mainTransaction.status = 'completed';
@@ -753,41 +452,24 @@
 //       mainTransaction.processedBy = adminId;
 //       mainTransaction.processedAt = new Date();
 //       await mainTransaction.save();
-//       console.log(`✅ Updated Transaction collection record`);
 //     }
 
-//     // Update embedded transaction
 //     transaction.status = 'completed';
 //     transaction.processedBy = adminId;
 //     transaction.processedAt = new Date();
 //     transaction.adminNote = note || 'Withdrawal approved';
 
-//     // Update user wallet and stats
-//     const oldEarnings = this.wallets.earning;
-//     const oldReserved = this.wallets.reserved;
-    
-//     this.wallets.earning -= transaction.amount;
+//     // ✅ ONLY remove from RESERVED (already deducted from EARNING when requested)
 //     this.wallets.reserved -= transaction.amount;
 //     this.stats.totalWithdrawn += transaction.amount;
 //     this.stats.pendingWithdrawals -= transaction.amount;
 
-//     console.log(`💸 Old Earnings: ${oldEarnings.toLocaleString()} FRW`);
-//     console.log(`💸 Old Reserved: ${oldReserved.toLocaleString()} FRW`);
-//     console.log(`💸 Withdrawal Amount: ${transaction.amount.toLocaleString()} FRW`);
-//     console.log(`💸 New Earnings: ${this.wallets.earning.toLocaleString()} FRW`);
-//     console.log(`💸 New Reserved: ${this.wallets.reserved.toLocaleString()} FRW`);
-//     console.log(`📊 Total Withdrawn: ${this.stats.totalWithdrawn.toLocaleString()} FRW`);
-
-//     // Add notification
 //     await this.addNotification(
-//       `Your withdrawal of ${transaction.amount.toLocaleString()} FRW has been approved. Funds will be sent to ${transaction.phoneNumber} via ${transaction.paymentMethod}.`,
+//       `Your withdrawal of ${transaction.amount.toLocaleString()} FRW has been approved.`,
 //       'success'
 //     );
 
 //     await this.save();
-    
-//     console.log(`✅ Withdrawal approved successfully!`);
-//     console.log(`💸 ========================================\n`);
     
 //     return transaction;
 //   } catch (error) {
@@ -796,18 +478,9 @@
 //   }
 // };
 
-// // ✅ UPDATE: Admin: Reject transaction (with Transaction model integration)
+// // ✅ FIXED: Admin reject withdrawal - RETURN to EARNING, REMOVE from RESERVED
 // userSchema.methods.rejectTransaction = async function (transactionId, adminId, note) {
 //   try {
-//     console.log(`\n❌ ========================================`);
-//     console.log(`❌ REJECTING TRANSACTION`);
-//     console.log(`❌ ========================================`);
-//     console.log(`👤 User: ${this.izina_ryogukoresha}`);
-//     console.log(`📱 Phone: ${this.nimero_yatelefone}`);
-//     console.log(`📝 Transaction ID: ${transactionId}`);
-//     console.log(`👨‍💼 Admin ID: ${adminId}`);
-//     console.log(`🗒️  Reason: ${note || 'No reason provided'}`);
-    
 //     const transaction = this.transactions.id(transactionId);
     
 //     if (!transaction || !['deposit', 'withdraw'].includes(transaction.type)) {
@@ -818,14 +491,6 @@
 //       throw new Error('Transaction already processed');
 //     }
 
-//     console.log(`📋 Transaction Details:`);
-//     console.log(`💵 Type: ${transaction.type}`);
-//     console.log(`💰 Amount: ${transaction.amount.toLocaleString()} FRW`);
-//     console.log(`📄 Description: ${transaction.description}`);
-//     console.log(`🆔 Reference: ${transaction.reference}`);
-//     console.log(`📊 Old Status: ${transaction.status}`);
-    
-//     // Also update Transaction collection
 //     const mainTransaction = await Transaction.findById(transactionId);
 //     if (mainTransaction) {
 //       mainTransaction.status = 'rejected';
@@ -833,38 +498,34 @@
 //       mainTransaction.processedBy = adminId;
 //       mainTransaction.processedAt = new Date();
 //       await mainTransaction.save();
-//       console.log(`✅ Updated Transaction collection record`);
 //     }
 
-//     // Update embedded transaction
 //     transaction.status = 'rejected';
 //     transaction.processedBy = adminId;
 //     transaction.processedAt = new Date();
 //     transaction.adminNote = note || 'Transaction rejected';
  
-//     // If it's a withdrawal, release reserved funds
 //     if (transaction.type === 'withdraw') {
-//       const oldReserved = this.wallets.reserved;
+//       // ✅ RETURN money to EARNING, REMOVE from RESERVED
+//       this.wallets.earning += transaction.amount;
 //       this.wallets.reserved -= transaction.amount;
 //       this.stats.pendingWithdrawals -= transaction.amount;
-//       console.log(`💸 Released reserved funds: ${transaction.amount.toLocaleString()} FRW`);
-//       console.log(`💸 Old Reserved: ${oldReserved.toLocaleString()} FRW`);
-//       console.log(`💸 New Reserved: ${this.wallets.reserved.toLocaleString()} FRW`);
+      
+//       await this.addNotification(
+//         `Your withdrawal of ${transaction.amount.toLocaleString()} FRW has been rejected. Reason: ${note || 'Transaction rejected'}. Funds returned to your earnings wallet.`,
+//         'warning'
+//       );
+      
 //     } else if (transaction.type === 'deposit') {
 //       this.stats.pendingDeposits -= transaction.amount;
-//       console.log(`💰 Removed pending deposit: ${transaction.amount.toLocaleString()} FRW`);
+      
+//       await this.addNotification(
+//         `Your deposit of ${transaction.amount.toLocaleString()} FRW has been rejected. Reason: ${note || 'Transaction rejected'}.`,
+//         'warning'
+//       );
 //     }
 
-//     // Add notification
-//     await this.addNotification(
-//       `Your ${transaction.type} of ${transaction.amount.toLocaleString()} FRW has been rejected. Reason: ${note || 'Transaction rejected'}`,
-//       'warning'
-//     );
-
 //     await this.save();
-    
-//     console.log(`✅ Transaction rejected successfully!`);
-//     console.log(`❌ ========================================\n`);
     
 //     return transaction;
 //   } catch (error) {
@@ -879,11 +540,9 @@
 //     throw new Error(`Insufficient earnings. Available: ${this.wallets.earning} FRW`);
 //   }
 
-//   // Transfer from earning to main wallet
 //   this.wallets.earning -= amount;
 //   this.wallets.main += amount;
 
-//   // Create transaction record
 //   const transaction = {
 //     type: 'transfer',
 //     amount: amount,
@@ -902,12 +561,10 @@
 
 // // ✅ Add referral earnings
 // userSchema.methods.addReferralEarnings = async function (amount, referrerName) {
-//   // Add to earning wallet
 //   this.wallets.earning += amount;
 //   this.stats.referralEarnings += amount;
 //   this.stats.totalEarned += amount;
 
-//   // Create transaction record
 //   const transaction = {
 //     type: 'referral',
 //     amount: amount,
@@ -920,7 +577,6 @@
 
 //   this.transactions.push(transaction);
   
-//   // Add notification
 //   this.notifications.push({
 //     message: `You earned ${amount.toLocaleString()} FRW from referral commission!`,
 //     type: 'success',
@@ -932,63 +588,27 @@
 //   return transaction;
 // };
 
-// // ✅ UPDATE: Get transaction history (includes both sources)
+// // ✅ Get transaction history
 // userSchema.methods.getTransactionHistory = function (limit = 50) {
-//   console.log(`\n📊 ========================================`);
-//   console.log(`📊 GETTING TRANSACTION HISTORY`);
-//   console.log(`📊 ========================================`);
-//   console.log(`👤 User: ${this.izina_ryogukoresha}`);
-//   console.log(`📈 Total transactions: ${this.transactions.length}`);
-//   console.log(`📏 Limit: ${limit}`);
-  
-//   // Return combined transactions (embedded ones)
-//   const history = this.transactions
+//   return this.transactions
 //     .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
 //     .slice(0, limit);
-  
-//   console.log(`📊 Returning ${history.length} transactions`);
-//   console.log(`📊 ========================================\n`);
-//   return history;
 // };
 
-// // ✅ UPDATE: Get pending transactions
+// // ✅ Get pending transactions
 // userSchema.methods.getPendingTransactions = function () {
-//   const pending = this.transactions.filter(t => t.status === 'pending');
-//   console.log(`\n⏳ ========================================`);
-//   console.log(`⏳ GETTING PENDING TRANSACTIONS`);
-//   console.log(`⏳ ========================================`);
-//   console.log(`👤 User: ${this.izina_ryogukoresha}`);
-//   console.log(`⏳ Pending transactions: ${pending.length}`);
-  
-//   // Calculate total pending amount
-//   const pendingAmount = pending.reduce((sum, t) => sum + (t.amount || 0), 0);
-//   console.log(`💰 Total pending amount: ${pendingAmount.toLocaleString()} FRW`);
-//   console.log(`⏳ ========================================\n`);
-  
-//   return pending;
+//   return this.transactions.filter(t => t.status === 'pending');
 // };
 
-// // ✅ NEW: Sync transactions from Transaction collection to user document
+// // ✅ Sync transactions
 // userSchema.methods.syncTransactions = async function() {
 //   try {
-//     console.log(`\n🔄 ========================================`);
-//     console.log(`🔄 SYNCING TRANSACTIONS`);
-//     console.log(`🔄 ========================================`);
-//     console.log(`👤 User: ${this.izina_ryogukoresha}`);
-    
-//     // Get all transactions from Transaction collection for this user
 //     const mainTransactions = await Transaction.find({ user: this._id })
 //       .sort({ createdAt: -1 })
 //       .limit(100);
     
-//     console.log(`📊 Transactions in Transaction collection: ${mainTransactions.length}`);
-//     console.log(`📊 Transactions in user document: ${this.transactions.length}`);
-    
-//     // Create a map of existing transaction IDs in user document
 //     const existingIds = new Set(this.transactions.map(t => t._id.toString()));
     
-//     // Add missing transactions
-//     let addedCount = 0;
 //     for (const mainTx of mainTransactions) {
 //       if (!existingIds.has(mainTx._id.toString())) {
 //         this.transactions.push({
@@ -1005,16 +625,10 @@
 //           createdAt: mainTx.createdAt,
 //           processedAt: mainTx.processedAt
 //         });
-//         addedCount++;
 //       }
 //     }
     
 //     await this.save();
-    
-//     console.log(`✅ Synced ${addedCount} new transactions`);
-//     console.log(`📊 New total: ${this.transactions.length}`);
-//     console.log(`🔄 ========================================\n`);
-    
 //     return this.transactions;
 //   } catch (error) {
 //     console.error('Error syncing transactions:', error);
@@ -1032,30 +646,17 @@
 //   });
   
 //   await this.save();
-  
 //   return this.notifications[this.notifications.length - 1];
 // };
 
 // // ✅ Mark notifications as read
 // userSchema.methods.markNotificationsAsRead = async function () {
-//   this.notifications.forEach(notification => {
-//     notification.read = true;
-//   });
-  
+//   this.notifications.forEach(notification => { notification.read = true; });
 //   await this.save();
-  
 //   return this.notifications;
 // };
 
-// // ==================================================
-// // EXPORT MODEL
-// // ==================================================
 // module.exports = mongoose.model('User', userSchema);
-
-
-
-
-
 
 
 
@@ -1186,36 +787,64 @@ const userSchema = new mongoose.Schema({
 });
 
 // ==================================================
-// PRE-SAVE HOOK
+// PRE-SAVE HOOK - FIXED
 // ==================================================
 userSchema.pre('save', async function (next) {
-  if (this.isModified('ijambo_banga')) {
-    this.ijambo_banga = await bcrypt.hash(this.ijambo_banga, 10);
-  }
-
-  if (!this.referralCode) {
-    let code;
-    let exists = true;
-    while (exists) {
-      code = 'APEX' + Math.random().toString(36).substring(2, 8).toUpperCase();
-      exists = await mongoose.models.User.findOne({ referralCode: code });
+  try {
+    // Hash password if modified
+    if (this.isModified('ijambo_banga')) {
+      this.ijambo_banga = await bcrypt.hash(this.ijambo_banga, 10);
     }
-    this.referralCode = code;
-  }
 
-  if (!this.wallets) {
-    this.wallets = { main: 400, earning: 0, reserved: 0 };
-  }
+    // Generate referral code if not exists
+    if (!this.referralCode) {
+      let code;
+      let exists = true;
+      while (exists) {
+        code = 'APEX' + Math.random().toString(36).substring(2, 8).toUpperCase();
+        exists = await mongoose.models.User.findOne({ referralCode: code });
+      }
+      this.referralCode = code;
+    }
 
-  if (!this.stats) {
-    this.stats = {
-      totalReferrals: 0, totalEarned: 0, totalSpent: 0, totalInvestments: 0,
-      totalWithdrawn: 0, referralEarnings: 0, totalDeposits: 0,
-      pendingDeposits: 0, pendingWithdrawals: 0, dailyEarnings: 0
-    };
-  }
+    // ✅ CRITICAL FIX: Properly handle wallets without resetting existing values
+    if (!this.wallets) {
+      // New user - set default wallets
+      this.wallets = { 
+        main: 400, 
+        earning: 0, 
+        reserved: 0 
+      };
+    } else {
+      // Existing user - ensure all wallet properties exist but KEEP existing values
+      const currentWallets = this.wallets;
+      this.wallets = {
+        main: currentWallets.main !== undefined ? currentWallets.main : 400,
+        earning: currentWallets.earning !== undefined ? currentWallets.earning : 0,
+        reserved: currentWallets.reserved !== undefined ? currentWallets.reserved : 0
+      };
+    }
 
-  next();
+    // ✅ FIX: Properly handle stats without resetting
+    if (!this.stats) {
+      this.stats = {
+        totalReferrals: 0,
+        totalEarned: 0,
+        totalSpent: 0,
+        totalInvestments: 0,
+        totalWithdrawn: 0,
+        referralEarnings: 0,
+        totalDeposits: 0,
+        pendingDeposits: 0,
+        pendingWithdrawals: 0,
+        dailyEarnings: 0
+      };
+    }
+
+    next();
+  } catch (error) {
+    next(error);
+  }
 });
 
 // ==================================================
@@ -1275,7 +904,7 @@ userSchema.methods.getDashboardData = function () {
       main: this.wallets?.main || 0,
       earning: this.wallets?.earning || 0,
       reserved: this.wallets?.reserved || 0,
-      available: (this.wallets?.earning || 0) - (this.wallets?.reserved || 0) // FIXED: Show available earnings
+      available: (this.wallets?.earning || 0) - (this.wallets?.reserved || 0)
     },
     stats: {
       totalReferrals: userStats.totalReferrals || 0,
@@ -1406,44 +1035,84 @@ userSchema.methods.createDepositRequest = async function (amount, paymentMethod,
   }
 };
 
-// ✅ FIXED: Create withdrawal request - DEDUCT from EARNING, ADD to RESERVED
+// ✅ FIXED AND IMPROVED: Create withdrawal request
 userSchema.methods.createWithdrawalRequest = async function (amount, paymentMethod, phoneNumber, description) {
   try {
+    console.log("🔍 createWithdrawalRequest - START");
+    console.log("- Amount:", amount);
+    console.log("- Current wallets BEFORE any operation:", {
+      main: this.wallets.main,
+      earning: this.wallets.earning,
+      reserved: this.wallets.reserved
+    });
+
     if (amount < 5000) throw new Error('Minimum withdrawal is 5,000 FRW');
 
-    // Check EARNING wallet
-    if (this.wallets.earning < amount) {
-      throw new Error(`Insufficient earnings balance. Available: ${this.wallets.earning.toLocaleString()} FRW`);
+    // Check for existing pending withdrawals
+    const hasPending = this.transactions?.some(t => 
+      t.type === 'withdraw' && t.status === 'pending'
+    );
+    
+    if (hasPending) {
+      throw new Error('You have a pending withdrawal request. Please wait for it to be processed.');
     }
 
-    // ✅ CRITICAL FIX: DEDUCT from EARNING and ADD to RESERVED
-    this.wallets.earning -= amount;
-    this.wallets.reserved += amount;
-    
+    // Check EARNING wallet - ensure it's a number
+    const earningBalance = Number(this.wallets.earning) || 0;
+    const withdrawAmount = Number(amount);
+
+    console.log("- Balance check:", {
+      earningBalance,
+      withdrawAmount,
+      hasEnough: earningBalance >= withdrawAmount
+    });
+
+    if (earningBalance < withdrawAmount) {
+      throw new Error(`Insufficient earnings balance. Available: ${earningBalance.toLocaleString()} FRW`);
+    }
+
+    // ✅ Perform the wallet updates
+    this.wallets.earning = earningBalance - withdrawAmount;
+    this.wallets.reserved = (Number(this.wallets.reserved) || 0) + withdrawAmount;
+
+    console.log("- Wallets AFTER update:", {
+      earning: this.wallets.earning,
+      reserved: this.wallets.reserved
+    });
+
+    // Create transaction
     const transaction = await this.createTransactionRecord({
       type: 'withdraw',
-      amount: amount,
+      amount: withdrawAmount,
       status: 'pending',
       paymentMethod: paymentMethod,
       phoneNumber: phoneNumber,
       description: description || `Withdrawal request to ${paymentMethod}`
     });
 
-    this.stats.pendingWithdrawals += amount;
+    // Update stats
+    this.stats.pendingWithdrawals = (this.stats.pendingWithdrawals || 0) + withdrawAmount;
+
+    console.log("- About to save user...");
+    
+    // Save the user
     await this.save();
     
-    console.log(`\n💸 WITHDRAWAL REQUEST CREATED: ${amount.toLocaleString()} FRW`);
-    console.log(`💰 Earnings left: ${this.wallets.earning.toLocaleString()} FRW`);
-    console.log(`🔒 Reserved: ${this.wallets.reserved.toLocaleString()} FRW`);
-    
+    console.log("✅ User saved successfully");
+    console.log("- Final wallets:", {
+      earning: this.wallets.earning,
+      reserved: this.wallets.reserved
+    });
+
     return transaction;
+
   } catch (error) {
-    console.error('Error creating withdrawal request:', error);
+    console.error('❌ Error in createWithdrawalRequest:', error);
     throw error;
   }
 };
 
-// ✅ FIXED: Create investment purchase
+// ✅ Create investment purchase
 userSchema.methods.createInvestment = async function (productId, productName, price, dailyEarning, duration, returnRate) {
   if (this.wallets.main < price) {
     throw new Error(`Insufficient balance. Available: ${this.wallets.main.toLocaleString()} FRW`);
@@ -1485,7 +1154,7 @@ userSchema.methods.createInvestment = async function (productId, productName, pr
   return { investment, transaction };
 };
 
-// ✅ FIXED: Admin approve withdrawal - ONLY remove from RESERVED
+// ✅ Admin approve withdrawal
 userSchema.methods.approveWithdrawal = async function (transactionId, adminId, note) {
   try {
     const transaction = this.transactions.id(transactionId);
@@ -1531,7 +1200,7 @@ userSchema.methods.approveWithdrawal = async function (transactionId, adminId, n
   }
 };
 
-// ✅ FIXED: Admin reject withdrawal - RETURN to EARNING, REMOVE from RESERVED
+// ✅ Admin reject withdrawal
 userSchema.methods.rejectTransaction = async function (transactionId, adminId, note) {
   try {
     const transaction = this.transactions.id(transactionId);
