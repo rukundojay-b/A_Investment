@@ -1394,10 +1394,9 @@ router.post('/deposit', authMiddleware, async (req, res) => {
         createdAt: transaction.createdAt
       }
     });
-
   } catch (error) {
     console.error('Deposit error:', error);
-    res.status(400).json({ 
+    res.status(400).json({
       success: false, 
       message: error.message || 'Failed to create deposit request'
     });
@@ -1502,7 +1501,6 @@ router.post('/purchase', authMiddleware, async (req, res) => {
       dailyEarning,
       isFirstInvestment
     });
-
   } catch (error) {
     console.error('Purchase error:', error);
     res.status(400).json({ 
