@@ -1,4 +1,3 @@
-
 // src/components/InvestmentLogin.jsx
 import React, { useState, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
@@ -65,7 +64,7 @@ const InvestmentLogin = ({ darkMode, setDarkMode, onLogin }) => {
     e.preventDefault()
     
     if (isLocked) {
-      setError(`Login locked. Please wait ${lockTime} seconds before trying again.`)
+      setError(`Account temporarily locked. Please wait ${lockTime} seconds before trying again.`)
       return
     }
     
@@ -74,14 +73,14 @@ const InvestmentLogin = ({ darkMode, setDarkMode, onLogin }) => {
 
     // Basic validation
     if (!formData.nimero_yatelefone.trim() || !formData.ijambo_banga.trim()) {
-      setError('Nimero ya telefone n\'ijambo banga byombi birakenewe')
+      setError('Phone number and password are required')
       setLoading(false)
       return
     }
 
     const phoneRegex = /^(?:\+250|0)?[78][0-9]{8}$/
     if (!phoneRegex.test(formData.nimero_yatelefone)) {
-      setError('Numero ya telefone ntabwo ari yo. Andika nka: 0781234567')
+      setError('Invalid phone number format. Please use format: 0781234567')
       setLoading(false)
       return
     }
@@ -95,11 +94,8 @@ const InvestmentLogin = ({ darkMode, setDarkMode, onLogin }) => {
       if (response.data.success) {
         const { token, user } = response.data
         
-        // ✅ FIX: ONLY store the token, NOT user data
+        // Store only the token, not user data
         sessionStorage.setItem('token', token)
-        
-        // ❌ REMOVE this line - don't store user separately
-        // sessionStorage.setItem('user', JSON.stringify(user))
         
         // Reset login attempts on successful login
         localStorage.removeItem('loginAttempts')
@@ -144,15 +140,15 @@ const InvestmentLogin = ({ darkMode, setDarkMode, onLogin }) => {
       if (err.response) {
         switch (err.response.status) {
           case 401:
-            setError('Numero ya telefone cyangwa ijambo banga ntabwo byahuye')
+            setError('Invalid phone number or password')
             break
           default:
-            setError(err.response.data?.message || 'Habaye ikibazo. Ongera ugerageze.')
+            setError(err.response.data?.message || 'An error occurred. Please try again.')
         }
       } else if (err.request) {
-        setError('Ntabwo twashoboye guhura na seriveri. Reba niba backend iri gukora.')
+        setError('Unable to connect to server. Please check if backend is running.')
       } else {
-        setError('Habaye ikibazo. Ongera ugerageze.')
+        setError('An error occurred. Please try again.')
       }
     } finally {
       setLoading(false)
@@ -180,13 +176,13 @@ const InvestmentLogin = ({ darkMode, setDarkMode, onLogin }) => {
       {/* Logo & Header */}
       <div className="text-center mb-8">
         <div className="w-20 h-20 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full flex items-center justify-center mx-auto mb-4">
-          <span className="text-white text-3xl font-bold">AI</span>
+          <span className="text-white text-3xl font-bold">AG</span>
         </div>
         <h1 className={`text-4xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-          Apex Invest
+          Apex Growth
         </h1>
         <p className={`mt-2 text-lg ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
-          Injira muri konti yawe
+          Grow your wealth, secure your future
         </p>
       </div>
 
@@ -217,7 +213,7 @@ const InvestmentLogin = ({ darkMode, setDarkMode, onLogin }) => {
               <label className={`block mb-2 font-medium ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
                 <div className="flex items-center">
                   <FaPhone className="mr-2" />
-                  Numero ya telefone *
+                  Phone Number *
                 </div>
               </label>
               <input
@@ -229,10 +225,10 @@ const InvestmentLogin = ({ darkMode, setDarkMode, onLogin }) => {
                 className={`w-full p-3 rounded-lg border ${darkMode ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400' : 'border-gray-300 placeholder-gray-500'} focus:outline-none focus:ring-2 focus:ring-blue-500`}
                 required
                 pattern="^(?:\+250|0)?[78][0-9]{8}$"
-                title="Andika numero ya telefone nka: 0781234567"
+                title="Enter phone number in format: 0781234567"
                 disabled={isLocked}
               />
-              <p className="text-xs mt-1 opacity-75">Shyiramo numero ya telefone yakoreshejwe mwandikisha (nk: 0781234567)</p>
+              <p className="text-xs mt-1 opacity-75">Enter the phone number you used during registration (e.g., 0781234567)</p>
             </div>
 
             {/* Password Field */}
@@ -240,14 +236,14 @@ const InvestmentLogin = ({ darkMode, setDarkMode, onLogin }) => {
               <label className={`block mb-2 font-medium ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
                 <div className="flex items-center">
                   <FaLock className="mr-2" />
-                  Ijambo banga *
+                  Password *
                 </div>
               </label>
               <div className="relative">
                 <input
                   type={showPassword ? "text" : "password"}
                   name="ijambo_banga"
-                  placeholder="Shyiramo ijambo banga"
+                  placeholder="Enter your password"
                   value={formData.ijambo_banga}
                   onChange={handleChange}
                   className={`w-full p-3 rounded-lg border ${darkMode ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400' : 'border-gray-300 placeholder-gray-500'} focus:outline-none focus:ring-2 focus:ring-blue-500 pr-10`}
@@ -265,7 +261,7 @@ const InvestmentLogin = ({ darkMode, setDarkMode, onLogin }) => {
                 </button>
               </div>
               <div className="flex justify-between items-center mt-1">
-                <p className="text-xs opacity-75">Ijambo banga wabitswe mwandikisha (nibura inyuguti 6)</p>
+                <p className="text-xs opacity-75">Enter the password you set during registration (minimum 6 characters)</p>
                 <button
                   type="button"
                   onClick={resetPassword}
@@ -280,7 +276,7 @@ const InvestmentLogin = ({ darkMode, setDarkMode, onLogin }) => {
             {/* Login Attempts Warning */}
             {loginAttempts >= 3 && loginAttempts < 5 && (
               <div className={`p-3 rounded ${darkMode ? 'bg-yellow-900/30 border border-yellow-700 text-yellow-300' : 'bg-yellow-100 border border-yellow-400 text-yellow-700'}`}>
-                <p className="text-sm font-medium">⚠️ Warning: {5 - loginAttempts} attempts remaining before lock</p>
+                <p className="text-sm font-medium">⚠️ Warning: {5 - loginAttempts} attempts remaining before account lock</p>
               </div>
             )}
 
@@ -296,12 +292,12 @@ const InvestmentLogin = ({ darkMode, setDarkMode, onLogin }) => {
                     <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                     <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                   </svg>
-                  Injira...
+                  Signing in...
                 </>
               ) : isLocked ? (
-                '🔒 Login Locked'
+                '🔒 Account Locked'
               ) : (
-                'Injira'
+                'Sign In'
               )}
             </button>
           </form>
@@ -309,13 +305,13 @@ const InvestmentLogin = ({ darkMode, setDarkMode, onLogin }) => {
           {/* Signup Link */}
           <div className="mt-6 pt-4 border-t border-gray-700 text-center">
             <p className={darkMode ? 'text-gray-400' : 'text-gray-600'}>
-              Ntabwo ufite konti?{' '}
+              Don't have an account?{' '}
               <Link 
                 to="/signup" 
                 className={`font-medium ${darkMode ? 'text-green-400 hover:text-green-300' : 'text-green-600 hover:text-green-700'} flex items-center justify-center`}
               >
                 <FaUserPlus className="mr-2" />
-                Iyandikishe hano
+                Create Account
               </Link>
             </p>
           </div>

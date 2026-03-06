@@ -1,19 +1,4 @@
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 const express = require('express');
 const router = express.Router();
 const authMiddleware = require('../middleware/authMiddleware');
@@ -42,12 +27,10 @@ router.post('/deposits', authMiddleware, async (req, res) => {
       console.error(`❌ Invalid amount: ${amount}`);
       return res.status(400).json({ success: false, message: 'Invalid amount' });
     }
-
     if (amount < 1000) {
       console.error(`❌ Minimum deposit not met: ${amount}`);
       return res.status(400).json({ success: false, message: 'Minimum deposit is 1,000 FRW' });
     }
-
     if (!paymentMethod || !['mtn', 'airtel', 'bank'].includes(paymentMethod)) {
       console.error(`❌ Invalid payment method: ${paymentMethod}`);
       return res.status(400).json({ success: false, message: 'Invalid payment method' });

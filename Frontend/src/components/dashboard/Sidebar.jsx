@@ -37,10 +37,10 @@ const Sidebar = ({
           <div className="flex items-center justify-between mb-8">
             <div className="flex items-center">
               <div className={`w-10 h-10 rounded-xl ${darkMode ? 'bg-gradient-to-br from-blue-600 to-purple-600' : 'bg-gradient-to-br from-blue-500 to-purple-500'} flex items-center justify-center`}>
-                <span className="text-white font-bold text-lg">AI</span>
+                <span className="text-white font-bold text-lg">AG</span>
               </div>
               <div className="ml-3">
-                <h2 className="text-xl font-bold">Dashboard</h2>
+                <h2 className="text-xl font-bold">Apex Growth</h2>
                 {dataSource === 'database' && (
                   <div className="flex items-center text-xs text-green-500">
                     <FaDatabase className="mr-1" /> Live Data
@@ -266,9 +266,9 @@ const Sidebar = ({
           {/* Footer Note */}
           <div className="mt-auto pt-6 border-t border-gray-700/50">
             <p className="text-xs opacity-75 text-center">
-              Apex Invest © {new Date().getFullYear()}
+              Apex Growth © {new Date().getFullYear()}
               <br />
-              <span className="text-green-500">25% Daily Returns</span>
+              <span className="text-green-500">14.29% Daily Returns</span>
             </p>
           </div>
         </div>
@@ -294,5 +294,4 @@ const SidebarNavItem = ({ icon: Icon, text, onClick, darkMode, badge }) => (
     )}
   </button>
 );
-
 export default Sidebar;

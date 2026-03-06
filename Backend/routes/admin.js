@@ -12,12 +12,22 @@
 
 
 
+
+
+
+
+
+
+
+
+// // backend/routes/admin.js
 // const express = require('express');
 // const router = express.Router();
 // const User = require('../models/User');
 // const Product = require('../models/Product');
 // const Transaction = require('../models/Transaction');
 // const adminAuth = require('../middleware/adminAuth');
+// const notifyUser = require('../utils/notifications');
 
 // // ==================================================
 // // USER MANAGEMENT
@@ -122,8 +132,12 @@
 //       });
 //     }
     
+//     const oldStatus = user.status;
 //     user.status = status;
 //     await user.save();
+    
+//     // ✅ NOTIFICATION: Status change
+//     await notifyUser.statusChanged(user._id, status);
     
 //     res.json({ 
 //       success: true, 
@@ -208,6 +222,21 @@
 //       .sort({ createdAt: 1 }) // Oldest first
 //       .limit(100);
     
+//     // Format transactions for frontend
+//     const formattedTransactions = transactions.map(tx => ({
+//       transactionId: tx._id,
+//       userId: tx.user?._id,
+//       userName: tx.user?.izina_ryogukoresha || 'Unknown',
+//       userPhone: tx.user?.nimero_yatelefone || '',
+//       type: tx.type,
+//       amount: tx.amount,
+//       paymentMethod: tx.paymentMethod,
+//       phoneNumber: tx.phoneNumber,
+//       reference: tx.reference,
+//       description: tx.description,
+//       createdAt: tx.createdAt
+//     }));
+    
 //     // Get counts for each type
 //     const counts = {
 //       deposits: await Transaction.countDocuments({ type: 'deposit', status: 'pending' }),
@@ -226,7 +255,7 @@
     
 //     res.json({ 
 //       success: true, 
-//       transactions,
+//       transactions: formattedTransactions,
 //       counts,
 //       total: transactions.length,
 //       amounts: {
@@ -276,7 +305,7 @@
 //   try {
 //     const { id } = req.params;
 //     const { note } = req.body;
-//     const adminId = req.user._id;
+//     const adminId = req.admin._id;
     
 //     console.log(`\n🚀 ========================================`);
 //     console.log(`🚀 ADMIN TRANSACTION APPROVAL REQUEST`);
@@ -285,7 +314,6 @@
 //     console.log(`👤 Admin ID: ${adminId}`);
 //     console.log(`📝 Transaction ID: ${id}`);
 //     console.log(`🗒️  Note: ${note || 'No note provided'}`);
-//     console.log(`📁 Request Body:`, req.body);
 //     console.log(`🚀 ========================================\n`);
     
 //     // Find transaction in Transaction collection
@@ -359,10 +387,11 @@
 //         userTransaction.adminNote = note || 'Deposit approved';
 //       }
       
-//       // Add notification to user
-//       await user.addNotification(
-//         `Your deposit of ${transaction.amount.toLocaleString()} FRW has been approved and added to your account.`,
-//         'success'
+//       // ✅ NOTIFICATION: Deposit approved
+//       await notifyUser.depositApproved(
+//         user._id,
+//         transaction.amount,
+//         transaction._id
 //       );
       
 //       console.log(`✅ Deposit added to user's wallet`);
@@ -416,10 +445,13 @@
 //         userTransaction.adminNote = note || 'Withdrawal approved';
 //       }
       
-//       // Add notification to user
-//       await user.addNotification(
-//         `Your withdrawal of ${transaction.amount.toLocaleString()} FRW has been approved. Funds will be sent to ${transaction.phoneNumber} via ${transaction.paymentMethod}.`,
-//         'success'
+//       // ✅ NOTIFICATION: Withdrawal approved
+//       await notifyUser.withdrawApproved(
+//         user._id,
+//         transaction.amount,
+//         transaction.phoneNumber,
+//         transaction.paymentMethod,
+//         transaction._id
 //       );
       
 //       console.log(`✅ Withdrawal processed successfully`);
@@ -483,7 +515,7 @@
 //   try {
 //     const { id } = req.params;
 //     const { note } = req.body;
-//     const adminId = req.user._id;
+//     const adminId = req.admin._id;
     
 //     console.log(`\n❌ ========================================`);
 //     console.log(`❌ ADMIN TRANSACTION REJECTION REQUEST`);
@@ -549,17 +581,39 @@
 //       console.log(`💸 RELEASING RESERVED FUNDS`);
 //       console.log(`💸 ========================================`);
       
-//       // Release reserved funds back to main wallet
+//       // Release reserved funds back to earning wallet
 //       const oldReserved = user.wallets.reserved;
+//       const oldEarnings = user.wallets.earning;
+      
+//       user.wallets.earning += transaction.amount;
 //       user.wallets.reserved = Math.max(0, user.wallets.reserved - transaction.amount);
 //       user.stats.pendingWithdrawals = Math.max(0, user.stats.pendingWithdrawals - transaction.amount);
       
 //       console.log(`💸 Old Reserved: ${oldReserved.toLocaleString()} FRW`);
+//       console.log(`💸 Old Earnings: ${oldEarnings.toLocaleString()} FRW`);
 //       console.log(`💸 Withdrawal Amount: ${transaction.amount.toLocaleString()} FRW`);
 //       console.log(`💸 New Reserved: ${user.wallets.reserved.toLocaleString()} FRW`);
+//       console.log(`💸 New Earnings: ${user.wallets.earning.toLocaleString()} FRW`);
 //       console.log(`💸 ========================================\n`);
+      
+//       // ✅ NOTIFICATION: Withdrawal rejected
+//       await notifyUser.withdrawRejected(
+//         user._id,
+//         transaction.amount,
+//         note,
+//         transaction._id
+//       );
+      
 //     } else if (transaction.type === 'deposit') {
 //       user.stats.pendingDeposits = Math.max(0, user.stats.pendingDeposits - transaction.amount);
+      
+//       // ✅ NOTIFICATION: Deposit rejected
+//       await notifyUser.depositRejected(
+//         user._id,
+//         transaction.amount,
+//         note,
+//         transaction._id
+//       );
 //     }
     
 //     // Update embedded transaction in user document
@@ -571,7 +625,7 @@
 //       userTransaction.adminNote = note;
 //     }
     
-//     // Add notification to user
+//     // Add notification to user (using existing method for backward compatibility)
 //     await user.addNotification(
 //       `Your ${transaction.type} of ${transaction.amount.toLocaleString()} FRW has been rejected. Reason: ${note}`,
 //       'warning'
@@ -707,7 +761,6 @@
 
 
 
-
 // backend/routes/admin.js
 const express = require('express');
 const router = express.Router();
@@ -820,12 +873,13 @@ router.put('/users/:id/status', adminAuth, async (req, res) => {
       });
     }
     
-    const oldStatus = user.status;
     user.status = status;
     await user.save();
     
-    // ✅ NOTIFICATION: Status change
-    await notifyUser.statusChanged(user._id, status);
+    // NOTIFICATION: Status change
+    if (typeof notifyUser?.statusChanged === 'function') {
+      await notifyUser.statusChanged(user._id, status);
+    }
     
     res.json({ 
       success: true, 
@@ -910,6 +964,21 @@ router.get('/transactions/pending', adminAuth, async (req, res) => {
       .sort({ createdAt: 1 }) // Oldest first
       .limit(100);
     
+    // Format transactions for frontend
+    const formattedTransactions = transactions.map(tx => ({
+      transactionId: tx._id,
+      userId: tx.user?._id,
+      userName: tx.user?.izina_ryogukoresha || 'Unknown',
+      userPhone: tx.user?.nimero_yatelefone || '',
+      type: tx.type,
+      amount: tx.amount,
+      paymentMethod: tx.paymentMethod,
+      phoneNumber: tx.phoneNumber,
+      reference: tx.reference,
+      description: tx.description,
+      createdAt: tx.createdAt
+    }));
+    
     // Get counts for each type
     const counts = {
       deposits: await Transaction.countDocuments({ type: 'deposit', status: 'pending' }),
@@ -928,7 +997,7 @@ router.get('/transactions/pending', adminAuth, async (req, res) => {
     
     res.json({ 
       success: true, 
-      transactions,
+      transactions: formattedTransactions,
       counts,
       total: transactions.length,
       amounts: {
@@ -973,12 +1042,12 @@ router.get('/transactions/:id', adminAuth, async (req, res) => {
   }
 });
 
-// Approve transaction
+// Approve transaction - FIXED WITHDRAWAL LOGIC
 router.post('/transactions/:id/approve', adminAuth, async (req, res) => {
   try {
     const { id } = req.params;
     const { note } = req.body;
-    const adminId = req.user._id;
+    const adminId = req.admin._id;
     
     console.log(`\n🚀 ========================================`);
     console.log(`🚀 ADMIN TRANSACTION APPROVAL REQUEST`);
@@ -987,7 +1056,6 @@ router.post('/transactions/:id/approve', adminAuth, async (req, res) => {
     console.log(`👤 Admin ID: ${adminId}`);
     console.log(`📝 Transaction ID: ${id}`);
     console.log(`🗒️  Note: ${note || 'No note provided'}`);
-    console.log(`📁 Request Body:`, req.body);
     console.log(`🚀 ========================================\n`);
     
     // Find transaction in Transaction collection
@@ -998,6 +1066,14 @@ router.post('/transactions/:id/approve', adminAuth, async (req, res) => {
       return res.status(404).json({ 
         success: false, 
         message: 'Transaction not found in database' 
+      });
+    }
+    
+    // Check if already processed
+    if (transaction.status !== 'pending') {
+      return res.status(400).json({
+        success: false,
+        message: `Transaction already ${transaction.status}`
       });
     }
     
@@ -1061,12 +1137,19 @@ router.post('/transactions/:id/approve', adminAuth, async (req, res) => {
         userTransaction.adminNote = note || 'Deposit approved';
       }
       
-      // ✅ NOTIFICATION: Deposit approved
-      await notifyUser.depositApproved(
-        user._id,
-        transaction.amount,
-        transaction._id
-      );
+      // NOTIFICATION: Deposit approved
+      if (typeof notifyUser?.depositApproved === 'function') {
+        await notifyUser.depositApproved(
+          user._id,
+          transaction.amount,
+          transaction._id
+        );
+      } else {
+        await user.addNotification(
+          `Your deposit of ${transaction.amount.toLocaleString()} FRW has been approved.`,
+          'success'
+        );
+      }
       
       console.log(`✅ Deposit added to user's wallet`);
       console.log(`💰 ========================================\n`);
@@ -1074,39 +1157,38 @@ router.post('/transactions/:id/approve', adminAuth, async (req, res) => {
     
     if (transaction.type === 'withdraw') {
       console.log(`💸 ========================================`);
-      console.log(`💸 PROCESSING WITHDRAWAL`);
+      console.log(`💸 PROCESSING WITHDRAWAL APPROVAL`);
       console.log(`💸 ========================================`);
       
-      // Check if user has enough earnings
-      if (user.wallets.earning < transaction.amount) {
-        console.error(`❌ Insufficient earnings!`);
-        console.error(`💸 User Earnings: ${user.wallets.earning.toLocaleString()} FRW`);
+      // ✅ FIXED: For withdrawal approval, we ONLY remove from RESERVED wallet
+      // The money was already moved from EARNING to RESERVED when the request was created
+      
+      // Check if user has enough in reserved wallet
+      if (user.wallets.reserved < transaction.amount) {
+        console.error(`❌ Insufficient reserved funds!`);
+        console.error(`💸 User Reserved: ${user.wallets.reserved.toLocaleString()} FRW`);
         console.error(`💸 Withdrawal Amount: ${transaction.amount.toLocaleString()} FRW`);
         
         // Reject transaction automatically
         transaction.status = 'rejected';
-        transaction.adminNote = 'Insufficient earnings balance';
+        transaction.adminNote = 'Insufficient reserved funds';
         await transaction.save();
         
         return res.status(400).json({
           success: false,
-          message: `User has insufficient earnings for this withdrawal. Available: ${user.wallets.earning.toLocaleString()} FRW`
+          message: `User has insufficient reserved funds for this withdrawal. Available: ${user.wallets.reserved.toLocaleString()} FRW`
         });
       }
       
-      // Deduct from user's earnings and reserved
-      const oldEarnings = user.wallets.earning;
+      // ✅ ONLY remove from RESERVED (money already out of EARNING)
       const oldReserved = user.wallets.reserved;
       
-      user.wallets.earning -= transaction.amount;
-      user.wallets.reserved = Math.max(0, user.wallets.reserved - transaction.amount);
+      user.wallets.reserved -= transaction.amount;
       user.stats.totalWithdrawn += transaction.amount;
       user.stats.pendingWithdrawals = Math.max(0, user.stats.pendingWithdrawals - transaction.amount);
       
-      console.log(`💸 Old Earnings: ${oldEarnings.toLocaleString()} FRW`);
       console.log(`💸 Old Reserved: ${oldReserved.toLocaleString()} FRW`);
       console.log(`💸 Withdrawal Amount: ${transaction.amount.toLocaleString()} FRW`);
-      console.log(`💸 New Earnings: ${user.wallets.earning.toLocaleString()} FRW`);
       console.log(`💸 New Reserved: ${user.wallets.reserved.toLocaleString()} FRW`);
       console.log(`💸 Total Withdrawn: ${user.stats.totalWithdrawn.toLocaleString()} FRW`);
       
@@ -1119,16 +1201,23 @@ router.post('/transactions/:id/approve', adminAuth, async (req, res) => {
         userTransaction.adminNote = note || 'Withdrawal approved';
       }
       
-      // ✅ NOTIFICATION: Withdrawal approved
-      await notifyUser.withdrawApproved(
-        user._id,
-        transaction.amount,
-        transaction.phoneNumber,
-        transaction.paymentMethod,
-        transaction._id
-      );
+      // NOTIFICATION: Withdrawal approved
+      if (typeof notifyUser?.withdrawApproved === 'function') {
+        await notifyUser.withdrawApproved(
+          user._id,
+          transaction.amount,
+          transaction.phoneNumber,
+          transaction.paymentMethod,
+          transaction._id
+        );
+      } else {
+        await user.addNotification(
+          `Your withdrawal of ${transaction.amount.toLocaleString()} FRW has been approved. Funds will be sent to ${transaction.phoneNumber} via ${transaction.paymentMethod}.`,
+          'success'
+        );
+      }
       
-      console.log(`✅ Withdrawal processed successfully`);
+      console.log(`✅ Withdrawal approved successfully`);
       console.log(`💸 ========================================\n`);
     }
     
@@ -1189,7 +1278,7 @@ router.post('/transactions/:id/reject', adminAuth, async (req, res) => {
   try {
     const { id } = req.params;
     const { note } = req.body;
-    const adminId = req.user._id;
+    const adminId = req.admin._id;
     
     console.log(`\n❌ ========================================`);
     console.log(`❌ ADMIN TRANSACTION REJECTION REQUEST`);
@@ -1216,6 +1305,14 @@ router.post('/transactions/:id/reject', adminAuth, async (req, res) => {
       return res.status(404).json({ 
         success: false, 
         message: 'Transaction not found' 
+      });
+    }
+    
+    // Check if already processed
+    if (transaction.status !== 'pending') {
+      return res.status(400).json({
+        success: false,
+        message: `Transaction already ${transaction.status}`
       });
     }
     
@@ -1252,37 +1349,56 @@ router.post('/transactions/:id/reject', adminAuth, async (req, res) => {
     
     if (transaction.type === 'withdraw') {
       console.log(`💸 ========================================`);
-      console.log(`💸 RELEASING RESERVED FUNDS`);
+      console.log(`💸 RELEASING RESERVED FUNDS BACK TO EARNING`);
       console.log(`💸 ========================================`);
       
-      // Release reserved funds back to main wallet
+      // Release reserved funds back to earning wallet
       const oldReserved = user.wallets.reserved;
+      const oldEarnings = user.wallets.earning;
+      
+      user.wallets.earning += transaction.amount;
       user.wallets.reserved = Math.max(0, user.wallets.reserved - transaction.amount);
       user.stats.pendingWithdrawals = Math.max(0, user.stats.pendingWithdrawals - transaction.amount);
       
       console.log(`💸 Old Reserved: ${oldReserved.toLocaleString()} FRW`);
+      console.log(`💸 Old Earnings: ${oldEarnings.toLocaleString()} FRW`);
       console.log(`💸 Withdrawal Amount: ${transaction.amount.toLocaleString()} FRW`);
       console.log(`💸 New Reserved: ${user.wallets.reserved.toLocaleString()} FRW`);
+      console.log(`💸 New Earnings: ${user.wallets.earning.toLocaleString()} FRW`);
       console.log(`💸 ========================================\n`);
       
-      // ✅ NOTIFICATION: Withdrawal rejected
-      await notifyUser.withdrawRejected(
-        user._id,
-        transaction.amount,
-        note,
-        transaction._id
-      );
+      // NOTIFICATION: Withdrawal rejected
+      if (typeof notifyUser?.withdrawRejected === 'function') {
+        await notifyUser.withdrawRejected(
+          user._id,
+          transaction.amount,
+          note,
+          transaction._id
+        );
+      } else {
+        await user.addNotification(
+          `Your withdrawal of ${transaction.amount.toLocaleString()} FRW has been rejected. Reason: ${note}. Funds returned to your earnings wallet.`,
+          'warning'
+        );
+      }
       
     } else if (transaction.type === 'deposit') {
       user.stats.pendingDeposits = Math.max(0, user.stats.pendingDeposits - transaction.amount);
       
-      // ✅ NOTIFICATION: Deposit rejected
-      await notifyUser.depositRejected(
-        user._id,
-        transaction.amount,
-        note,
-        transaction._id
-      );
+      // NOTIFICATION: Deposit rejected
+      if (typeof notifyUser?.depositRejected === 'function') {
+        await notifyUser.depositRejected(
+          user._id,
+          transaction.amount,
+          note,
+          transaction._id
+        );
+      } else {
+        await user.addNotification(
+          `Your deposit of ${transaction.amount.toLocaleString()} FRW has been rejected. Reason: ${note}.`,
+          'warning'
+        );
+      }
     }
     
     // Update embedded transaction in user document
@@ -1293,12 +1409,6 @@ router.post('/transactions/:id/reject', adminAuth, async (req, res) => {
       userTransaction.processedAt = new Date();
       userTransaction.adminNote = note;
     }
-    
-    // Add notification to user (using existing method for backward compatibility)
-    await user.addNotification(
-      `Your ${transaction.type} of ${transaction.amount.toLocaleString()} FRW has been rejected. Reason: ${note}`,
-      'warning'
-    );
     
     // Save changes
     await transaction.save();

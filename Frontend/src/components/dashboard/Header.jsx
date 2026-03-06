@@ -1,4 +1,3 @@
-
 // src/components/dashboard/Header.jsx
 import React, { useState, useEffect } from 'react';
 import { 
@@ -295,6 +294,7 @@ const Header = ({
     e.stopPropagation();
     toggleDarkMode();
   };
+  
   return (
     <>
       <header className={`sticky top-0 z-20 border-b ${darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'} py-2 px-3 md:px-6`}>
@@ -340,7 +340,7 @@ const Header = ({
               title="My Investment"
             >
               <FaChartLine className="mr-1" />
-              <span>My_Investment</span>
+              <span>My Portfolio</span>
             </button>
 
             {/* Chatbot Button - Hidden on mobile (will show as FAB) */}

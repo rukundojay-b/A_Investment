@@ -5,7 +5,7 @@ const Footer = () => (
   <footer className="mt-8 pt-6 border-t border-gray-700/30">
     <div className="text-center">
       <p className="text-sm opacity-75">
-        Apex Invest © {new Date().getFullYear()} • All rights reserved
+        Apex Growth © {new Date().getFullYear()} • All rights reserved
       </p>
       <p className="text-xs mt-2 opacity-60">
         Investment involves risk. Past performance is not indicative of future results.

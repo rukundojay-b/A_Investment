@@ -297,7 +297,6 @@ const TransactionModal = ({ darkMode, isOpen, onClose, type, user, onSuccess }) 
       </div>
     );
   }
-
   // Step 3: Confirmation Screen
   if (step === 3) {
     return (
@@ -762,8 +761,8 @@ const TransactionModal = ({ darkMode, isOpen, onClose, type, user, onSuccess }) 
                     ))
                 }
               </div>
+              
             </div>
-
             {type === 'deposit' && (
               <div className={`p-3 rounded-lg ${darkMode ? 'bg-green-900/20 border border-green-700/30' : 'bg-green-50 border border-green-200'}`}>
                 <p className="text-sm font-medium mb-2">📱 Quick USSD Deposit:</p>
