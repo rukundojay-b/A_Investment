@@ -1,3 +1,7 @@
+
+
+
+
 // // src/components/pages/TransactionsHistory.jsx
 // import React, { useState, useEffect } from 'react';
 // import { 
@@ -5,7 +9,8 @@
 //   FaCheckCircle, FaTimesCircle, FaClock, FaSpinner,
 //   FaFilter, FaDownload, FaEye, FaWallet, FaChartLine,
 //   FaSearch, FaCalendarAlt, FaChevronLeft, FaChevronRight,
-//   FaInfoCircle, FaBan, FaExchangeAlt, FaTimes
+//   FaInfoCircle, FaBan, FaExchangeAlt, FaTimes,
+//   FaArrowLeft  // Added FaArrowLeft
 // } from 'react-icons/fa';
 // import { useNavigate } from 'react-router-dom';
 // import axios from 'axios';
@@ -45,7 +50,7 @@
 //   const fetchTransactions = async () => {
 //     try {
 //       setLoading(true);
-//       const token = localStorage.getItem('token');
+//       const token = sessionStorage.getItem('token'); // Changed from localStorage to sessionStorage
       
 //       const response = await axios.get('http://localhost:5000/api/user/transactions?limit=100', {
 //         headers: { 'Authorization': `Bearer ${token}` }
@@ -229,9 +234,16 @@
 
 //   return (
 //     <div className={`min-h-screen p-4 md:p-6 ${darkMode ? 'bg-gray-900 text-white' : 'bg-gray-50 text-gray-900'}`}>
-//       {/* Header */}
-//       <div className="flex flex-col md:flex-row md:items-center justify-between mb-6">
-//         <div>
+//       {/* Header with Back Button */}
+//       <div className="flex items-center mb-6">
+//         <button
+//           onClick={() => navigate('/dashboard')}
+//           className={`p-2 rounded-lg mr-4 ${darkMode ? 'hover:bg-gray-800' : 'hover:bg-gray-200'}`}
+//           title="Back to Dashboard"
+//         >
+//           <FaArrowLeft className="text-xl" />
+//         </button>
+//         <div className="flex-1">
 //           <h1 className="text-2xl md:text-3xl font-bold flex items-center">
 //             <FaHistory className="mr-3 text-blue-500" />
 //             Transaction History
@@ -240,7 +252,7 @@
 //         </div>
 //         <button
 //           onClick={exportToCSV}
-//           className={`mt-4 md:mt-0 px-4 py-2 rounded-lg flex items-center ${
+//           className={`px-4 py-2 rounded-lg flex items-center ${
 //             darkMode ? 'bg-green-600 hover:bg-green-700' : 'bg-green-500 hover:bg-green-600'
 //           } text-white`}
 //         >
@@ -581,15 +593,7 @@
 //   </div>
 // );
 
-// // ✅ ADD THIS DEFAULT EXPORT AT THE BOTTOM
 // export default TransactionsHistory;
-
-
-
-
-
-
-
 
 
 
@@ -609,10 +613,11 @@ import {
   FaFilter, FaDownload, FaEye, FaWallet, FaChartLine,
   FaSearch, FaCalendarAlt, FaChevronLeft, FaChevronRight,
   FaInfoCircle, FaBan, FaExchangeAlt, FaTimes,
-  FaArrowLeft  // Added FaArrowLeft
+  FaArrowLeft
 } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import API_BASE_URL from '../../../config';
 
 const TransactionsHistory = ({ darkMode, formatCurrency }) => {
   const navigate = useNavigate();
@@ -649,9 +654,9 @@ const TransactionsHistory = ({ darkMode, formatCurrency }) => {
   const fetchTransactions = async () => {
     try {
       setLoading(true);
-      const token = sessionStorage.getItem('token'); // Changed from localStorage to sessionStorage
+      const token = sessionStorage.getItem('token');
       
-      const response = await axios.get('http://localhost:5000/api/user/transactions?limit=100', {
+      const response = await axios.get(`${API_BASE_URL}/user/transactions?limit=100`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
 

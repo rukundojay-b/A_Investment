@@ -2,6 +2,22 @@
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 // // src/components/pages/TeamMembers.jsx
 // import React, { useState, useEffect } from 'react';
 // import { 
@@ -9,12 +25,13 @@
 //   FaShareAlt, FaEnvelope, FaWhatsapp, FaTelegram,
 //   FaFacebook, FaTwitter, FaSpinner,
 //   FaChartLine, FaCoins, FaUser, FaGift, FaArrowRight,
-//   FaSync
+//   FaSync, FaArrowLeft  // Added FaArrowLeft
 // } from 'react-icons/fa';
-// import { Link } from 'react-router-dom';
+// import { Link, useNavigate } from 'react-router-dom'; // Added useNavigate
 // import axios from 'axios';
 
 // const TeamMembers = ({ darkMode, formatCurrency }) => {
+//   const navigate = useNavigate(); // Added navigate
 //   const [team, setTeam] = useState([]);
 //   const [loading, setLoading] = useState(true);
 //   const [showCopySuccess, setShowCopySuccess] = useState(false);
@@ -113,9 +130,16 @@
 
 //   return (
 //     <div className={`min-h-screen p-4 md:p-6 ${darkMode ? 'bg-gray-900 text-white' : 'bg-gray-50 text-gray-900'}`}>
-//       {/* Header */}
-//       <div className="flex items-center justify-between mb-6">
-//         <div>
+//       {/* Header with Back Button */}
+//       <div className="flex items-center mb-6">
+//         <button
+//           onClick={() => navigate('/dashboard')}
+//           className={`p-2 rounded-lg mr-4 ${darkMode ? 'hover:bg-gray-800' : 'hover:bg-gray-200'}`}
+//           title="Back to Dashboard"
+//         >
+//           <FaArrowLeft className="text-xl" />
+//         </button>
+//         <div className="flex-1">
 //           <h1 className="text-2xl md:text-3xl font-bold flex items-center">
 //             <FaUsers className="mr-3 text-green-500" />
 //             Team Members
@@ -380,27 +404,21 @@
 
 
 
-
-
-
-
-
-
-
 // src/components/pages/TeamMembers.jsx
 import React, { useState, useEffect } from 'react';
 import { 
   FaUsers, FaCopy, FaCheckCircle,
-  FaShareAlt, FaEnvelope, FaWhatsapp, FaTelegram,
+  FaEnvelope, FaWhatsapp, FaTelegram,
   FaFacebook, FaTwitter, FaSpinner,
-  FaChartLine, FaCoins, FaUser, FaGift, FaArrowRight,
-  FaSync, FaArrowLeft  // Added FaArrowLeft
+  FaChartLine, FaCoins, FaUser, FaGift,
+  FaSync, FaArrowLeft
 } from 'react-icons/fa';
-import { Link, useNavigate } from 'react-router-dom'; // Added useNavigate
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import API_BASE_URL from '../../../config';
 
 const TeamMembers = ({ darkMode, formatCurrency }) => {
-  const navigate = useNavigate(); // Added navigate
+  const navigate = useNavigate();
   const [team, setTeam] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showCopySuccess, setShowCopySuccess] = useState(false);
@@ -410,8 +428,7 @@ const TeamMembers = ({ darkMode, formatCurrency }) => {
     referralCode: ''
   });
   const [refreshing, setRefreshing] = useState(false);
-
-  const API_URL = 'http://localhost:5000/api';
+  
   const FRONTEND_URL = window.location.origin;
 
   useEffect(() => {
@@ -428,8 +445,7 @@ const TeamMembers = ({ darkMode, formatCurrency }) => {
         return;
       }
 
-      // Fetch team members from the new referral endpoint
-      const response = await axios.get(`${API_URL}/referrals/team`, {
+      const response = await axios.get(`${API_BASE_URL}/referrals/team`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
 
@@ -463,7 +479,7 @@ const TeamMembers = ({ darkMode, formatCurrency }) => {
   };
 
   const shareVia = (platform) => {
-    const text = "Join Apex Invest and start earning daily! Get 400 FRW bonus on signup!";
+    const text = "Join Apex Growth and start earning daily! Get 2,500 FRW bonus on signup!";
     const url = `${FRONTEND_URL}/signup?ref=${stats.referralCode}`;
     
     const shareUrls = {
@@ -471,7 +487,7 @@ const TeamMembers = ({ darkMode, formatCurrency }) => {
       telegram: `https://t.me/share/url?url=${encodeURIComponent(url)}&text=${encodeURIComponent(text)}`,
       facebook: `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`,
       twitter: `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`,
-      email: `mailto:?subject=${encodeURIComponent('Join Apex Invest')}&body=${encodeURIComponent(text + '\n\n' + url)}`
+      email: `mailto:?subject=${encodeURIComponent('Join Apex Growth')}&body=${encodeURIComponent(text + '\n\n' + url)}`
     };
 
     if (shareUrls[platform]) {
@@ -479,7 +495,6 @@ const TeamMembers = ({ darkMode, formatCurrency }) => {
     }
   };
 
-  // Calculate total potential commission
   const totalPotentialCommission = team.reduce((sum, member) => {
     return sum + (member.potentialCommission || 0);
   }, 0);
@@ -696,7 +711,7 @@ const TeamMembers = ({ darkMode, formatCurrency }) => {
                   </div>
                 </div>
 
-                {/* Progress Bar (shows if they've invested) */}
+                {/* Progress Bar */}
                 {member.investment > 0 && (
                   <div className="mt-3">
                     <div className="flex justify-between text-xs mb-1">

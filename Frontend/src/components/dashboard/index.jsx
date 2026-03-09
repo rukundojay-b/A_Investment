@@ -3,9 +3,11 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { 
   FaExclamationCircle, FaDatabase, FaSync, FaShoppingCart,
-  FaHistory, FaArrowDown, FaArrowUp, FaCoins, FaClock
+  FaHistory, FaArrowDown, FaArrowUp, FaCoins, FaClock,
+  FaTelegram, FaUsers, FaLink
 } from 'react-icons/fa';
 import axios from 'axios';
+import API_BASE_URL from '../../../config';
 
 // Import all dashboard components
 import Sidebar from './Sidebar';
@@ -19,7 +21,6 @@ import ChatbotFAB from './ChatbotFAB';
 import DataStatus from './DataStatus';
 import TransactionModal from '../TransactionModal';
 
-const API_URL = 'http://localhost:5000/api';
 const FRONTEND_URL = window.location.origin;
 
 const InvestmentDashboard = ({ darkMode, toggleDarkMode, onLogout }) => {
@@ -135,7 +136,7 @@ const InvestmentDashboard = ({ darkMode, toggleDarkMode, onLogout }) => {
         console.error('Could not decode token');
       }
 
-      const response = await axios.get(`${API_URL}/user/dashboard`, {
+      const response = await axios.get(`${API_BASE_URL}/user/dashboard`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
 
@@ -155,9 +156,6 @@ const InvestmentDashboard = ({ darkMode, toggleDarkMode, onLogout }) => {
           setDashboardData(safeUserData);
           setUser(safeUserData);
           setDataSource('database');
-          
-          // DON'T store user data in sessionStorage
-          // sessionStorage.setItem('user', JSON.stringify(safeUserData)); // ← REMOVED
           
           if (safeUserData.notifications && safeUserData.notifications.length > 0) {
             setNotifications(safeUserData.notifications.map(notif => ({
@@ -184,7 +182,6 @@ const InvestmentDashboard = ({ darkMode, toggleDarkMode, onLogout }) => {
         return;
       }
       
-      // Don't use cached user data
       setDataSource('error');
       setError('Failed to load dashboard data. Please try again.');
       
@@ -291,7 +288,7 @@ const InvestmentDashboard = ({ darkMode, toggleDarkMode, onLogout }) => {
         alert('❌ No funds in earning wallet!');
         return;
       }
-      const response = await axios.post(`${API_URL}/user/transfer-earnings`, {
+      const response = await axios.post(`${API_BASE_URL}/user/transfer-earnings`, {
         amount: earningBalance
       }, {
         headers: { 'Authorization': `Bearer ${token}` }
@@ -323,7 +320,7 @@ const InvestmentDashboard = ({ darkMode, toggleDarkMode, onLogout }) => {
         return;
       }
 
-      const response = await axios.post(`${API_URL}/user/purchase`, {
+      const response = await axios.post(`${API_BASE_URL}/user/purchase`, {
         productId: productId,
         productName: productName,
         amount: price
@@ -475,7 +472,7 @@ const InvestmentDashboard = ({ darkMode, toggleDarkMode, onLogout }) => {
         <main className="flex-1 overflow-y-auto px-4 py-6">
           {/* Welcome Banner - Mobile Friendly */}
           <div className={`mb-6 p-4 sm:p-6 rounded-2xl ${darkMode ? 'bg-gradient-to-r from-blue-900/30 to-purple-900/30 border border-blue-700/30' : 'bg-gradient-to-r from-blue-50 to-purple-50 border border-blue-200'}`}>
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div className="flex flex-col gap-4">
               <div>
                 <h1 className="text-xl sm:text-2xl font-bold mb-2">
                   Welcome back, <span className="text-blue-500">{user.izina_ryogukoresha || 'User'}</span>! 👋
@@ -483,22 +480,43 @@ const InvestmentDashboard = ({ darkMode, toggleDarkMode, onLogout }) => {
                 <p className={`text-sm sm:text-base ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>
                   Your growth journey continues. Start earning today!
                 </p>
-                <div className="flex flex-wrap items-center gap-3 sm:gap-4 mt-2">
-                  <div className="flex items-center text-sm">
-                    <FaExclamationCircle className="mr-2 text-blue-500 flex-shrink-0" />
-                    <span className="truncate max-w-[150px] sm:max-w-none">{user.nimero_yatelefone || 'No phone'}</span>
-                  </div>
-                  <div className="flex items-center text-sm">
-                    <FaHistory className="mr-2 text-green-500 flex-shrink-0" />
-                    <span>Member since {user.createdAt ? new Date(user.createdAt).toLocaleDateString() : 'Unknown'}</span>
-                  </div>
-                </div>
               </div>
-              <div className={`p-3 sm:p-4 rounded-xl ${darkMode ? 'bg-gray-800/50' : 'bg-white/50'} border ${darkMode ? 'border-gray-700' : 'border-gray-200'} self-start sm:self-center w-full sm:w-auto`}>
-                <div className="text-center">
-                  <div className="text-xs sm:text-sm opacity-75">Available Balance</div>
-                  <div className="text-xl sm:text-2xl font-bold text-green-500">{formatCurrency(user?.wallets?.main || 0)} FRW</div>
-                  <div className="text-xs mt-1">Ready for investment</div>
+              <h1>Contact for support</h1>
+              
+              {/* Support Links - Displayed as text in the same spot as account info used to be */}
+              <div className="flex flex-wrap items-center gap-3 sm:gap-4 mt-2">
+                <div className="flex items-center text-sm">
+                  <FaTelegram className="mr-2 text-blue-500 flex-shrink-0" />
+                  <a 
+                    href="https://t.me/apex_growth_support" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="hover:underline truncate max-w-[150px] sm:max-w-none"
+                  >
+                    t.me/apex_growth_support
+                  </a>
+                </div>
+                <div className="flex items-center text-sm">
+                  <FaUsers className="mr-2 text-green-500 flex-shrink-0" />
+                  <a 
+                    href="https://t.me/Apex_Growth_Group" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="hover:underline truncate max-w-[150px] sm:max-w-none"
+                  >
+                    t.me/Apex_Growth_Group
+                  </a>
+                </div>
+                <div className="flex items-center text-sm">
+                  <FaLink className="mr-2 text-purple-500 flex-shrink-0" />
+                  <a 
+                    href="https://t.me/apex_growth_channel" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="hover:underline truncate max-w-[150px] sm:max-w-none"
+                  >
+                    t.me/apex_growth_channel
+                  </a>
                 </div>
               </div>
             </div>

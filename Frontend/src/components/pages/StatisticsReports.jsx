@@ -1,14 +1,34 @@
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 // // src/components/pages/StatisticsReports.jsx
 // import React, { useState, useEffect } from 'react';
 // import { 
 //   FaChartLine, FaCalendarAlt, FaDownload, FaSpinner,
 //   FaWallet, FaCoins, FaUsers, FaArrowUp, FaArrowDown,
 //   FaClock, FaCheckCircle, FaTimesCircle, FaPercent,
-//   FaHistory, FaChartBar, FaChartPie
+//   FaHistory, FaChartBar, FaChartPie, FaArrowLeft  // Added FaArrowLeft
 // } from 'react-icons/fa';
+// import { useNavigate } from 'react-router-dom'; // Added useNavigate
 // import axios from 'axios';
 
 // const StatisticsReports = ({ darkMode, formatCurrency }) => {
+//   const navigate = useNavigate(); // Added navigate
 //   const [loading, setLoading] = useState(true);
 //   const [stats, setStats] = useState({
 //     wallets: { main: 0, earning: 0 },
@@ -38,7 +58,7 @@
 //   const fetchStatistics = async () => {
 //     try {
 //       setLoading(true);
-//       const token = localStorage.getItem('token');
+//       const token = sessionStorage.getItem('token'); // Changed from localStorage to sessionStorage
       
 //       const response = await axios.get('http://localhost:5000/api/user/dashboard', {
 //         headers: { 'Authorization': `Bearer ${token}` }
@@ -112,14 +132,23 @@
 
 //   return (
 //     <div className={`min-h-screen p-4 md:p-6 ${darkMode ? 'bg-gray-900 text-white' : 'bg-gray-50 text-gray-900'}`}>
-//       {/* Header */}
+//       {/* Header with Back Button */}
 //       <div className="flex flex-col md:flex-row md:items-center justify-between mb-6">
-//         <div>
-//           <h1 className="text-2xl md:text-3xl font-bold flex items-center">
-//             <FaChartLine className="mr-3 text-purple-500" />
-//             Statistics & Reports
-//           </h1>
-//           <p className="opacity-75 mt-1">Detailed analysis of your investment performance</p>
+//         <div className="flex items-center">
+//           <button
+//             onClick={() => navigate('/dashboard')}
+//             className={`p-2 rounded-lg mr-4 ${darkMode ? 'hover:bg-gray-800' : 'hover:bg-gray-200'}`}
+//             title="Back to Dashboard"
+//           >
+//             <FaArrowLeft className="text-xl" />
+//           </button>
+//           <div>
+//             <h1 className="text-2xl md:text-3xl font-bold flex items-center">
+//               <FaChartLine className="mr-3 text-purple-500" />
+//               Statistics & Reports
+//             </h1>
+//             <p className="opacity-75 mt-1">Detailed analysis of your investment performance</p>
+//           </div>
 //         </div>
 //         <button
 //           onClick={() => window.print()}
@@ -347,13 +376,6 @@
 
 
 
-
-
-
-
-
-
-
 // src/components/pages/StatisticsReports.jsx
 import React, { useState, useEffect } from 'react';
 import { 
@@ -364,6 +386,7 @@ import {
 } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom'; // Added useNavigate
 import axios from 'axios';
+import API_BASE_URL from '../../../config'; // Correct import path from src/components/pages to root
 
 const StatisticsReports = ({ darkMode, formatCurrency }) => {
   const navigate = useNavigate(); // Added navigate
@@ -398,7 +421,7 @@ const StatisticsReports = ({ darkMode, formatCurrency }) => {
       setLoading(true);
       const token = sessionStorage.getItem('token'); // Changed from localStorage to sessionStorage
       
-      const response = await axios.get('http://localhost:5000/api/user/dashboard', {
+      const response = await axios.get(`${API_BASE_URL}/user/dashboard`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
 

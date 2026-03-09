@@ -1,3 +1,4 @@
+
 // // src/components/AdminLogin.jsx
 // import React, { useState } from 'react';
 // import { useNavigate } from 'react-router-dom';
@@ -226,9 +227,6 @@
 
 
 
-
-
-
 // src/components/AdminLogin.jsx
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -242,6 +240,7 @@ import {
   FaShieldAlt
 } from 'react-icons/fa';
 import axios from 'axios';
+import API_BASE_URL from '../../config'; // Import the API base URL
 
 const AdminLogin = ({ darkMode, setDarkMode }) => {
   const navigate = useNavigate();
@@ -253,7 +252,8 @@ const AdminLogin = ({ darkMode, setDarkMode }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
-  const API_URL = 'http://localhost:5000/api';
+  // Remove this line:
+  // const API_URL = 'http://localhost:5000/api';
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -272,7 +272,7 @@ const AdminLogin = ({ darkMode, setDarkMode }) => {
     }
 
     try {
-      const response = await axios.post(`${API_URL}/admin/login`, formData, {
+      const response = await axios.post(`${API_BASE_URL}/admin/login`, formData, {
         headers: { 'Content-Type': 'application/json' },
         timeout: 10000
       });
